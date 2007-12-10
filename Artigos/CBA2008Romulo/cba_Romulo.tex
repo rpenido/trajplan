@@ -1,0 +1,201 @@
+\documentclass[conference,harvard,brazil,english]{sbatex}
+\usepackage[latin1]{inputenc}
+\usepackage{ae}
+%
+% LaTeX2e class SBATeX
+%
+% Versão 1.0 alpha
+%   Walter Fetter Lages
+%   w.fetter@ieee.org
+%
+% Este arquivo cba_esq.tex é um esqueleto para geração do artigo para o CBA
+%
+% --------------------------------------------------
+%
+% Para compilar este exemplo use a seqüência de comandos:
+%
+%     latex cba_esq
+%     bibtex cba_esq
+%     latex cba_esq
+%     latex cba_esq
+%
+% Para gerar um arquivo Postscript (.ps):
+%
+%     dvips -t a4 cba_esq
+%
+% Para gerar um arquivo Portable Document Format (.pdf):
+%
+%     dvips -Ppdf -t a4 cba_esq
+%     ps2pdf -dMaxSubsetPct=100 -dSubsetFonts=true -dEmbedAllFonts=true -dCompatibilityLevel=1.2 -sPAPERSIZE=a4 cba_esq.ps
+%
+%\usepackage{psfig,epsfig}
+%\usepackage{psfrag}
+%\usepackage{graphics}
+
+
+\begin{document}
+
+% CABEÇALHO
+
+\title{Título do Artigo}
+
+\author{Rômulo G. O. Penido}{romulo.penido@gmail.com}
+\author[1]{Eduardo J. Lima II}{eduardo@demec.ufmg.br}
+\address{Departamento de Engenharia Mecânica, Universidade Federal de Minas Gerais\\ Av. Antônio Carlos, 6627 - Pampulha  \\ Belo Horizonte, Minas Gerais, Brasil}
+
+
+
+\twocolumn[
+
+\maketitle
+
+\selectlanguage{english}
+\begin{abstract}
+    Enter abstract here.
+\end{abstract}
+
+\keywords{Enter Keywords Here.}
+
+\selectlanguage{brazil}
+\begin{abstract}
+    Coloque o resumo aqui.
+\end{abstract}
+
+\keywords{????????????????}
+]
+
+
+
+\selectlanguage{brazil}
+
+
+% CONTRIBUIÇÃO
+
+\section{Introdução}
+
+Introdução
+
+\section{Algoritmo de Afinamento}
+
+O afinamento é uma operação aplicada a imagens binárias para
+reduzi-las a uma cadeia simples com largura de um pixel,
+preservando a sua conectividade e topologia. O objetivo do
+afinamento é remover pixels redundantes na imagem de forma que
+apenas os pixels essenciais sejam mantidos.
+
+Para este trabalho, foi utilizado o algoritmo de afinamento de
+Zhang-Suen \cite{Zhang}. O algoritmo de Zhang-Suen é um algoritmo
+de afinamento paralelo. No afinamento paralelo, os pixels são
+examinados para exclusão baseando-se apenas na iteração anterior.
+Desta forma, a imagem pode ser dividida em partes menores e o
+processamento destas partes pode ser feito de forma independente
+(o que acarretaria um ganho de desempenho em um computador com
+mais de um processador).
+
+\begin{figure}[htb]
+    \center
+    \begin{tabular}{|c|c|c|}
+        \hline
+        $P_9$ & $P_2$ & $P_3$  \\
+        \hline
+        $P_8$ & $P$ & $P_4$ \\
+        \hline
+        $P_7$ & $P_6$ & $P_5$ \\
+        \hline
+    \end{tabular}
+    \caption{???}
+    \label{fig:EsquemaZhang}
+\end{figure}
+
+O algoritmo de Zhang-Suen avalia cada ponto da imagem e, através
+da análise da sua vizinhaça (um quadrado 3x3 em volta do pixel,
+como mostrado na Figura \ref{fig:EsquemaZhang}), define se este
+pixel pode ou não ser removido da imagem, sem afetar sua
+conectividade. Este algoritmo é composto por duas subiterações. Na
+primeira, o ponto P é excluído se satisfaz as seguintes condições:
+
+\begin{description}
+    \item [(a)] $ 2 <= NN(P) <= 6 $
+    \item [(b)] $ CRN(P) = 2 $
+    \item [(c)] $ P2 * P4 * P6 = 0 $
+    \item [(d)] $ P4 * P6 * P8 = 0 $
+\end{description}
+
+Onde NN(P) é o número de pixels vizinhos de P na cor preta e
+CRN(P) é o número de transições de branco para preto dos pixels
+vizinhos ao longo de uma rotação em torno de P. P2 a P9 assumem
+valor 1 quando o pixel é preto e 0 quando é branco.
+
+Na segunda iteração, as duas últimas condições são substituídas
+por suas rotações de 180º.
+
+\begin{description}
+    \item [(c')] $ P2 * P6 * P8 = 0 $
+    \item [(d')] $ P2 * P4 * P8 = 0 $
+\end{description}
+
+Assim, o primeiro ciclo exclui pixels nas bordas sul, leste e
+noroeste e o segundo exclui pixels nas posições opostas ao
+primeiro. Um dos problemas deste algoritmo é que ele não garante
+que o esqueleto gerado possua apenas um pixel de largura.
+
+Para resolver esse problema, foi utilizada a fórmula de Holt
+\cite{Holt} para remoção em escada. O processo de remoção em
+escada explora a seguinte propriedade: metade dos pixels que
+apresentam uma forma semelhante a uma escada pode ser removida sem
+afetar o formato ou a conectividade do objeto. O algoritmo se
+baseira em varrer toda a imagem e remover pixels que se encaixam
+em uma das máscaras:
+\begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        0 & 1 & $x$ \\
+        \hline
+        1 & 1 & $x$ \\
+        \hline
+        $x$ & $x$ & 0 \\
+        \hline
+    \end{tabular}
+    \hspace{20pt}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        $x$ & 1 & 0 \\
+        \hline
+        $x$ & 1 & 1 \\
+        \hline
+        0 & $x$ & $x$ \\
+        \hline
+    \end{tabular}
+    \\ \vspace{10pt}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        0 & $x$ & $x$ \\
+        \hline
+        $x$ & 1 & 1 \\
+        \hline
+        $x$ & 1 & 0 \\
+        \hline
+    \end{tabular}
+    \hspace{20pt}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        $x$ & $x$ & 0 \\
+        \hline
+        1 & 1 & $x$ \\
+        \hline
+        0 & 1 & $x$ \\
+        \hline
+    \end{tabular}
+\end{center}
+em que $x$ pode assumir qualquer valor, 0 ou 1.
+
+\section{Conclusões}
+
+\section*{Agradecimentos}
+
+    Os autores agradecem à FAPEMIG pelo apoio financeiro.
+
+% BIBLIOGRAFIA
+\bibliography{bibliRomulo}
+
+\end{document}
