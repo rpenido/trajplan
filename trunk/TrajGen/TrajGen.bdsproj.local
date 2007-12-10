@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2003/08/13 14:40:48.531.pas,C:\Documents and Settings\aluno\Meus documentos\Borland Studio Projects\Unit1.pas=D:\Projetos\Rob\MainFormImpl.pas</Transaction>
+    <Transaction>2003/08/13 14:40:48.546.dfm,C:\Documents and Settings\aluno\Meus documentos\Borland Studio Projects\Unit1.dfm=D:\Projetos\Rob\MainFormImpl.dfm</Transaction>
+    <Transaction>2003/08/13 14:40:57.750.bdsproj,C:\Documents and Settings\aluno\Meus documentos\Borland Studio Projects\Project1.bdsproj=D:\Projetos\Rob\Project1.bdsproj</Transaction>
+    <Transaction>2003/08/13 14:46:58.890.pas,D:\Projetos\Rob\Unit1.pas=D:\Projetos\Rob\ImageInterImpl.pas</Transaction>
+    <Transaction>2003/08/13 14:47:23.203.pas,D:\Projetos\Rob\ImageInterImpl.pas=D:\Projetos\Rob\ImageInterpImpl.pas</Transaction>
+    <Transaction>2007/09/01 09:46:21.578.pas,D:\Projetos\Rob\Unit1.pas=D:\Projetos\Rob\ProgUtils.pas</Transaction>
+    <Transaction>2003/01/01 18:27:50.765.pas,D:\Projetos\Rob\Unit1.pas=D:\Projetos\Rob\MathLib.pas</Transaction>
+    <Transaction>2007/12/10 08:02:00.328.bdsproj,F:\Projetos\Rômulo\Project1.bdsproj=F:\Projetos\Rômulo\Trajplan\TrajPlan.bdsproj</Transaction>
+    <Transaction>2007/12/10 08:02:12.828.pas,F:\Projetos\Rômulo\MainFormImpl.pas=F:\Projetos\Rômulo\Trajplan\MainFormImpl.pas</Transaction>
+    <Transaction>2007/12/10 08:02:12.828.dfm,F:\Projetos\Rômulo\MainFormImpl.dfm=F:\Projetos\Rômulo\Trajplan\MainFormImpl.dfm</Transaction>
+    <Transaction>2007/12/10 08:02:30.265.pas,F:\Projetos\Rômulo\ProgUtils.pas=F:\Projetos\Rômulo\Trajplan\ProgUtilsImpl.pas</Transaction>
+    <Transaction>2007/12/10 08:02:48.703.pas,F:\Projetos\Rômulo\MathLib.pas=</Transaction>
+    <Transaction>2007/12/10 08:02:59.296.pas,F:\Projetos\Rômulo\ImageInterpImpl.pas=F:\Projetos\Rômulo\Trajplan\ImageInterpImpl.pas</Transaction>
+    <Transaction>2007/12/10 08:06:36.140.bdsproj,F:\Projetos\Rômulo\Trajplan\TrajPlan.bdsproj=F:\Projetos\Rômulo\Trajplan\TrajGen\TrajGen.bdsproj</Transaction>
+    <Transaction>2007/12/10 08:06:43.031.pas,F:\Projetos\Rômulo\Trajplan\ImageInterpImpl.pas=F:\Projetos\Rômulo\Trajplan\TrajGen\ImageInterpImpl.pas</Transaction>
+    <Transaction>2007/12/10 08:06:48.281.pas,F:\Projetos\Rômulo\Trajplan\MainFormImpl.pas=F:\Projetos\Rômulo\Trajplan\TrajGen\MainFormImpl.pas</Transaction>
+    <Transaction>2007/12/10 08:06:48.281.dfm,F:\Projetos\Rômulo\Trajplan\MainFormImpl.dfm=F:\Projetos\Rômulo\Trajplan\TrajGen\MainFormImpl.dfm</Transaction>
+    <Transaction>2007/12/10 08:06:53.953.pas,F:\Projetos\Rômulo\Trajplan\ProgUtilsImpl.pas=F:\Projetos\Rômulo\Trajplan\TrajGen\ProgUtilsImpl.pas</Transaction>
+  </Transactions>
+</BorlandProject>
