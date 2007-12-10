@@ -78,15 +78,6 @@ object MainForm: TMainForm
     Default = True
     TabOrder = 0
   end
-  object Button1: TButton
-    Left = 376
-    Top = 622
-    Width = 75
-    Height = 25
-    Caption = 'Button1'
-    TabOrder = 3
-    OnClick = Button1Click
-  end
   object aclMain: TActionList
     Left = 16
     Top = 16
@@ -109,6 +100,14 @@ object MainForm: TMainForm
     object actStaircaseRemoval: TAction
       Caption = 'Remo'#231#227'o de Escadas'
       OnExecute = actStaircaseRemovalExecute
+    end
+    object actFindXAxis: TAction
+      Caption = 'Eixo X'
+      OnExecute = actFindXAxisExecute
+    end
+    object actFindYAxis: TAction
+      Caption = 'Eixo Y'
+      OnExecute = actFindYAxisExecute
     end
   end
   object dlgOpen: TOpenDialog
