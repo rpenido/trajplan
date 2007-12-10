@@ -108,7 +108,7 @@ mais de um processador).
 \end{figure}
 
 O algoritmo de Zhang-Suen avalia cada ponto da imagem e, através
-da análise da sua vizinhaça (um quadrado 3x3 em volta do pixel,
+da análise da sua vizinhança (um quadrado 3x3 em volta do pixel,
 como mostrado na Figura \ref{fig:EsquemaZhang}), define se este
 pixel pode ou não ser removido da imagem, sem afetar sua
 conectividade. Este algoritmo é composto por duas subiterações. Na
@@ -144,8 +144,8 @@ Para resolver esse problema, foi utilizada a fórmula de Holt
 escada explora a seguinte propriedade: metade dos pixels que
 apresentam uma forma semelhante a uma escada pode ser removida sem
 afetar o formato ou a conectividade do objeto. O algoritmo se
-baseira em varrer toda a imagem e remover pixels que se encaixam
-em uma das máscaras:
+baseia em varrer toda a imagem e remover pixels que se encaixam em
+uma das máscaras:
 \begin{center}
     \begin{tabular}{|c|c|c|}
         \hline
