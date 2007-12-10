@@ -23,7 +23,8 @@ type
     actSeparateColors: TAction;
     actThinStep: TAction;
     actStaircaseRemoval: TAction;
-    Button1: TButton;
+    actFindXAxis: TAction;
+    actFindYAxis: TAction;
     procedure actLoadImageExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure actReloadImageExecute(Sender: TObject);
@@ -31,6 +32,8 @@ type
     procedure actThinStepExecute(Sender: TObject);
     procedure actStaircaseRemovalExecute(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure actFindXAxisExecute(Sender: TObject);
+    procedure actFindYAxisExecute(Sender: TObject);
   private
     FImageInterp: TImageInterp;
     FThinCount: integer;
@@ -49,6 +52,46 @@ implementation
 uses
   ProgUtilsImpl, Types, ShellAPI;
 {$R *.dfm}
+
+procedure TMainForm.actFindXAxisExecute(Sender: TObject);
+var
+  a, b: double;
+  x, y: integer;
+begin
+  FImageInterp.FindXAxis(a, b);
+  x := 0;
+  y := Round(a*x + b);
+
+  imgMain.Canvas.Pen.Color := clBlue;
+
+  imgMain.Canvas.MoveTo(x, y);
+
+  x := FImageInterp.Width;
+  y := Round(a*x + b);
+
+  imgMain.Canvas.LineTo(x, y);
+
+  btnAction.Action := actFindYAxis;
+end;
+
+procedure TMainForm.actFindYAxisExecute(Sender: TObject);
+var
+  a, b: double;
+  x, y: integer;
+begin
+  FImageInterp.FindYAxis(a, b);
+  x := 0;
+  y := Round(a*x + b);
+
+  imgMain.Canvas.Pen.Color := clLime;
+
+  imgMain.Canvas.MoveTo(x, y);
+
+  x := FImageInterp.Width;
+  y := Round(a*x + b);
+
+  imgMain.Canvas.LineTo(x, y);
+end;
 
 procedure TMainForm.actLoadImageExecute(Sender: TObject);
 begin
@@ -81,9 +124,9 @@ begin
     FImageInterp.Blue, clBlue);
 
   Draw(FImageInterp.Black, $000000, True);
-  Draw(FImageInterp.Red, $FFBBBB);
+  Draw(FImageInterp.Red, $BBBBFF);
   Draw(FImageInterp.Green, $BBFFBB);
-  Draw(FImageInterp.Blue, $BBBBFF);
+  Draw(FImageInterp.Blue, $FFBBBB);
 
   btnAction.Action := actThinStep;
 end;
@@ -101,6 +144,7 @@ begin
   Draw(vRemovedPixels, clRed);
   Draw(FImageInterp.Black, clBlack);
 
+  btnAction.Action := actFindXAxis;
 end;
 
 procedure TMainForm.actThinStepExecute(Sender: TObject);

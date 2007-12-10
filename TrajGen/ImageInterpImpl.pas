@@ -91,6 +91,13 @@ type
     FGreen: TBinaryPixelMap;
     FBlue: TBinaryPixelMap;
 
+    FXAxisA: double;
+    FXAxisB: double;
+
+    FYAxisA: double;
+    FYAxisB: double;
+
+
     FThinState: boolean;
     FLastRemovedPixels: TBinaryPixelMap;
 
@@ -99,6 +106,8 @@ type
 
     function ThinBlackStep(var aRemovedPixels: TBinaryPixelMap): boolean;
     procedure RemoveStairCaseBlack(var aRemovedPixels: TBinaryPixelMap);
+    procedure FindXAxis(var a, b: double);
+    procedure FindYAxis(var a, b: double);
 
     property Image: TImage read FImage;
     property Width: integer read FWidth;
@@ -851,6 +860,20 @@ begin
   finally
     vDirectionCache.Free;
   end;
+end;
+
+procedure TImageInterp.FindXAxis(var a, b: double);
+begin
+  FindLine(FRed, FWidth, FHeight, FXAxisA, FXAxisB);
+  a := FXAxisA;
+  b := FXAxisB;
+end;
+
+procedure TImageInterp.FindYAxis(var a, b: double);
+begin
+  FindLine(FGreen, FWidth, FHeight, FYAxisA, FYAxisB);
+  a := FYAxisA;
+  b := FYAxisB;
 end;
 
 class function TImageInterp.IsStaircaseMask(const aImage: TBinaryPixelMap;
