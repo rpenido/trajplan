@@ -97,10 +97,10 @@ type
     FYAxisA: double;
     FYAxisB: double;
 
+    FOrigin: TPoint;
 
     FThinState: boolean;
     FLastRemovedPixels: TBinaryPixelMap;
-
   public
     constructor Create(const aImage: TImage);
 
@@ -108,6 +108,7 @@ type
     procedure RemoveStairCaseBlack(var aRemovedPixels: TBinaryPixelMap);
     procedure FindXAxis(var a, b: double);
     procedure FindYAxis(var a, b: double);
+    function GetOrigin: TPoint;
 
     property Image: TImage read FImage;
     property Width: integer read FWidth;
@@ -768,12 +769,22 @@ class procedure TImageInterp.FindLine(const aImage: TBinaryPixelMap; aWidth, aHe
 var a, b: double);
 var
   x, y: integer;
-  vSumX, vSumY, vSumSquareX, vSumXY: double;
+  vSumX, vSumY, vSumSquareX, vSumSquareY, vSumXY: double;
+  vAvgX, vAvgY: double;
+//  vSumErrXY: double;
+//  vSumSquareErrX, vSumSquareErrY: double;
   n: integer;
+  r: double;
+
+  vNum, vDem: double;
+
+//  a1, b1, a2, b2: double;
+//  r1, r2: double;
 begin
   vSumX := 0;
   vSumY := 0;
   vSumSquareX := 0;
+  vSumSquareY := 0;
   vSumXY := 0;
   n := 0;
 
@@ -784,13 +795,44 @@ begin
       Inc(n);
       vSumX := vSumX + x;
       vSumY := vSumY + y;
-      vSumSquareX := vSumSquareX + x*x;
+      vSumSquareX := vSumSquareX + Sqr(x);
+      vSumSquareY := vSumSquareY + Sqr(y);
       vSumXY := vSumXY + x*y;
     end;
 
+  vAvgX := vSumX/n;
+  vAvgY := vSumY/n;
+
   // Calcula coeficientes para reta y=ax+b
-  a := (n*vSumXY-vSumX*vSumY)/(n*vSumSquareX-vSumX*vSumX);
-  b := (vSumSquareX*vSumY-vSumXY*vSumX)/(n*vSumSquareX-vSumX*vSumX);
+  vNum := (n*vSumXY-vSumX*vSumY);
+  vDem := (n*vSumSquareX-Sqr(vSumX));
+  if (vDem = 0) then
+    a := INFINITE
+  else
+    a := vNum/vDem;
+
+  b := vAvgY-a*vAvgX;
+(*
+  vSumErrXY := 0;
+
+  for x := 0 to aWidth - 1 do
+    for y := 0 to aHeight - 1 do
+    if aImage[x, y] then
+    begin
+      vSumErrXY := vSumErrXY + (x - vAvgX)*(y - vAvgY);
+      vSumSquareErrX := vSumSquareErrX+ Sqr(x - vAvgX);
+      vSumSquareErrY := vSumSquareErrY+ Sqr(y - vAvgY);
+    end;
+*)
+  vNum := n*vSumXY-vSumX*vSumY;
+  vDem := Sqrt( (n*vSumSquareX - Sqr(vSumX))*(n*vSumSquareY - Sqr(vSumY)) );
+
+  if (vDem = 0) then
+    r := -1
+  else
+    r := Abs(vNum/vDem);
+
+  ShowMessage(FloatToStr(r));
 end;
 
 class function TImageInterp.FindPath(const aImage: TBinaryPixelMap;
@@ -803,7 +845,6 @@ var
   vNearDirection: TPathDirection;
 
   vNeightboardDirections: TPointDirection;
-
 
   dX, dY: integer;
 begin
@@ -1068,6 +1109,12 @@ begin
   aP7 := GetPoint(aImage, aX, aY, pdSW);
   aP8 := GetPoint(aImage, aX, aY, pdW);
   aP9 := GetPoint(aImage, aX, aY, pdNW);
+end;
+
+function TImageInterp.GetOrigin: TPoint;
+begin
+  FOrigin := IntersectLines(FXAxisA, FXAxisB, FYAxisA, FYAxisB);
+  result := FOrigin;
 end;
 
 class function TImageInterp.GetPoint(const aImage: TBinaryPixelMap; const aX,

@@ -62,7 +62,7 @@ begin
   x := 0;
   y := Round(a*x + b);
 
-  imgMain.Canvas.Pen.Color := clBlue;
+  imgMain.Canvas.Pen.Color := clRed;
 
   imgMain.Canvas.MoveTo(x, y);
 
