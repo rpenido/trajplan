@@ -1,6 +1,7 @@
 \documentclass[conference,harvard,brazil,english]{sbatex}
 \usepackage[latin1]{inputenc}
 \usepackage{ae}
+\usepackage{colortbl}
 %
 % LaTeX2e class SBATeX
 %
@@ -146,6 +147,7 @@ apresentam uma forma semelhante a uma escada pode ser removida sem
 afetar o formato ou a conectividade do objeto. O algoritmo se
 baseia em varrer toda a imagem e remover pixels que se encaixam em
 uma das máscaras:
+
 \begin{center}
     \begin{tabular}{|c|c|c|}
         \hline
@@ -188,6 +190,30 @@ uma das máscaras:
     \end{tabular}
 \end{center}
 em que $x$ pode assumir qualquer valor, 0 ou 1.
+
+\section{Definição da Trajetória}
+
+Uma vez que a linha de trajetória passou pelo algoritmo de
+afinação, é necessário ordenar estes pontos e gerar a trajetória
+para o robô. O primeiro passo é definir qual será o ponto inicial.
+
+Definido o ponto inicial, é necessário ordenar todos os outros
+pontos para formar a trajetória. Para esta ordenação, é criada uma
+matriz [x,y] equivalente à imagem e para cada ponto pertencente à
+trajetória é associada a informação referente à sua conectividade
+e ao tipo de trajetória.
+
+\section{Geração do programa para o robô}
+Depois de montado o grafo com informações da trajetória e de
+parâmetros de utilização, é necessário gerar o programa na
+linguagem do robô para executar estas tarefas.
+
+O arquivo gerado é feito baseado em um template.
+
+Para este trabalho, foi utilizado um manipulador robótica KUKA
+modelo XXXXXXXXXXXX.
+
+
 
 \section{Conclusões}
 

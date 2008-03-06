@@ -25,20 +25,27 @@ type
     actStaircaseRemoval: TAction;
     actFindXAxis: TAction;
     actFindYAxis: TAction;
+    actFindFirstPoint: TAction;
+    actFindPath: TAction;
     procedure actLoadImageExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure actReloadImageExecute(Sender: TObject);
     procedure actSeparateColorsExecute(Sender: TObject);
     procedure actThinStepExecute(Sender: TObject);
     procedure actStaircaseRemovalExecute(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
     procedure actFindXAxisExecute(Sender: TObject);
     procedure actFindYAxisExecute(Sender: TObject);
+    procedure actFindFirstPointExecute(Sender: TObject);
+    procedure actFindPathExecute(Sender: TObject);
   private
     FImageInterp: TImageInterp;
     FThinCount: integer;
+    FFirstPoint: TPoint;
     procedure LoadImage(const aFileName: string);
-    procedure Draw(const aImage: TBinaryPixelMap; const aColor: TColor; const aClear: boolean = False);
+    procedure Draw(const aImage: TBinaryPixelMap; const aColor: TColor; const aClear: boolean = False); overload;
+    procedure Draw(const aImage: TColorPixelMap; const aColor: TColor; const aClear: boolean = False); overload;
+    procedure Draw(const aImage: TBinaryPixelMap; const aOriginalImage: TColorPixelMap; const aClear: boolean = False); overload;
+    procedure CirclePoints(const aImage: TBinaryPixelMap; const aColor: TColor; const aRadius: integer);
   public
     procedure AfterConstruction; override;
     procedure BeforeDestruction; override;
@@ -52,6 +59,59 @@ implementation
 uses
   ProgUtilsImpl, Types, ShellAPI;
 {$R *.dfm}
+
+procedure TMainForm.actFindFirstPointExecute(Sender: TObject);
+begin
+  Draw(FImageInterp.Colors, $BBBBBB, True);
+  Draw(FImageInterp.AllColors, FImageInterp.Colors, False);
+  FFirstPoint := FImageInterp.GetFirstPoint;
+
+  // Destaca o início
+  imgMain.Canvas.Pen.Color := clLime;
+  imgMain.Canvas.Pen.Width := 1;
+  imgMain.Canvas.Brush.Style := bsClear;
+  imgMain.Canvas.Ellipse(FFirstPoint.X-10, FFirstPoint.Y-10, FFirstPoint.X+10, FFirstPoint.Y+10);
+
+  btnAction.Action := actFindPath;
+end;
+
+procedure TMainForm.actFindPathExecute(Sender: TObject);
+var
+  vPointList: TPointList;
+  i: integer;
+  vTst: TStringList;
+
+  vColorStr: string;
+begin
+
+  Draw(FImageInterp.Colors, $BBBBBB, True);
+
+  vPointList := TImageInterp.FindPath(FImageInterp.AllColors, FImageInterp.Colors,
+    FFirstPoint.X, FFirstPoint.Y);
+  vTst := TStringList.Create;
+  try
+    for i := 0 to vPointList.Count - 1 do
+    begin
+      if vPointList[i].Color = clBlack then
+        vColorStr := 'Black'
+      else if vPointList[i].Color = clGreen then
+        vColorStr := 'Green'
+      else
+        vColorStr := 'None';
+
+      imgMain.Canvas.Pixels[vPointList[i].X, vPointList[i].Y] := vPointList[i].Color;
+
+      vTst.Add(FloatToStr(vPointList[i].X)+','+FloatToStr(vPointList[i].Y)+' ('+IntToStr(Ord(vPointList[i].PathDirection))+') - '+vColorStr);
+    end;
+
+
+    vTst.SaveToFile('f:\teste.txt');
+  finally
+    vTst.Free;
+  end;
+
+  ShellExecute(Handle,'open', 'c:\windows\notepad.exe','f:\teste.txt', nil, SW_SHOWNORMAL);
+end;
 
 procedure TMainForm.actFindXAxisExecute(Sender: TObject);
 var
@@ -110,7 +170,7 @@ var
   vJob: IJob;
 begin
   vJob := StartJob;
-
+(*
   TImageInterp.Draw(imgBlack, FImageInterp.Width, FImageInterp.Height,
     FImageInterp.Black, clBlack);
 
@@ -128,6 +188,21 @@ begin
   Draw(FImageInterp.Green, $BBFFBB);
   Draw(FImageInterp.Blue, $FFBBBB);
 
+
+//  Draw(FImageInterp.AllColors, FOriginalImage, 0.5, True);
+    vRect.Left := 0;
+    vRect.Top := 0;
+    vRect.Right := FImageInterp.Width;
+    vRect.Bottom := FImageInterp.Height;
+
+    imgMain.Canvas.Brush.Color := clWhite;
+    imgMain.Canvas.FillRect(vRect);
+                          Tcopymode
+  imgMain.Canvas.Draw();
+  FOriginalImage.Canvas.CopyMode := cmSrcAnd;
+  imgMain.Canvas.CopyRect(vRect, FOriginalImage.Canvas, vRect);
+
+*)
   btnAction.Action := actThinStep;
 end;
 
@@ -140,11 +215,13 @@ begin
   vJob := StartJob;
 
   SetLength(vRemovedPixels, FImageInterp.Width, FImageInterp.Height);
-  FImageInterp.RemoveStairCaseBlack(vRemovedPixels);
+  FImageInterp.RemoveStairCaseAll(vRemovedPixels);
   Draw(vRemovedPixels, clRed);
-  Draw(FImageInterp.Black, clBlack);
+  Draw(FImageInterp.AllColors, FImageInterp.Colors);
 
-  btnAction.Action := actFindXAxis;
+  CirclePoints(vRemovedPixels, clRed, 5);
+
+  btnAction.Action := actFindFirstPoint;
 end;
 
 procedure TMainForm.actThinStepExecute(Sender: TObject);
@@ -158,7 +235,7 @@ begin
 
   Draw(FImageInterp.LastRemovedPixels, $BBBBBB);
   SetLength(vRemovedPixels, FImageInterp.Width, FImageInterp.Height);
-  if not FImageInterp.ThinBlackStep(vRemovedPixels) then
+  if not FImageInterp.ThinAllStep(vRemovedPixels) then
     Inc(FThinCount);
   if FImageInterp.ThinState then
     vRemovedColor := clRed
@@ -166,7 +243,7 @@ begin
     vRemovedColor := clLime;
 
   Draw(vRemovedPixels, vRemovedColor);
-  Draw(FImageInterp.Black, clBlack);
+  Draw(FImageInterp.AllColors, FImageInterp.Colors);
 
   if FThinCount > 1 then
     btnAction.Action := actStaircaseRemoval;
@@ -184,24 +261,73 @@ begin
   FImageInterp.Free;
 end;
 
-procedure TMainForm.Button1Click(Sender: TObject);
+procedure TMainForm.CirclePoints(const aImage: TBinaryPixelMap;
+  const aColor: TColor; const aRadius: integer);
 var
-  vPointList: TPointList;
-  i: integer;
-  vTst: TStringList;
+  x, y : integer;
 begin
-  vPointList := TImageInterp.FindPath(FImageInterp.Black, 0, 0);
-  vTst := TStringList.Create;
-  try
-    for i := 0 to vPointList.Count - 1 do
-      vTst.Add(FloatToStr(vPointList[i].X)+','+FloatToStr(vPointList[i].Y)+' ('+IntToStr(Ord(vPointList[i].PathDirection))+')');
+  imgMain.Canvas.Pen.Color := aColor;
+  imgMain.Canvas.Pen.Width := 1;  
+  imgMain.Canvas.Brush.Style := bsClear;
 
-    vTst.SaveToFile('f:\teste.txt');
-  finally
-    vTst.Free;
+  for x := 0 to FImageInterp.Height -1 do
+    for y := 0 to FImageInterp.Width -1 do
+    begin
+      if aImage[x,y] then
+        imgMain.Canvas.Ellipse(x-aRadius, y-aRadius, x+aRadius, y+aRadius);
   end;
 
-  ShellExecute(Handle,'open', 'c:\windows\notepad.exe','f:\teste.txt', nil, SW_SHOWNORMAL);
+end;
+
+procedure TMainForm.Draw(const aImage: TBinaryPixelMap;
+  const aOriginalImage: TColorPixelMap; const aClear: boolean);
+var
+  vRect: TRect;
+  x,y: integer;
+begin
+  if aClear then
+  begin
+    vRect.Left := 0;
+    vRect.Top := 0;
+    vRect.Right := FImageInterp.Width;
+    vRect.Bottom := FImageInterp.Height;
+
+    imgMain.Canvas.Brush.Color := clWhite;
+    imgMain.Canvas.FillRect(vRect);
+  end;
+
+  for x := 0 to FImageInterp.Height -1 do
+    for y := 0 to FImageInterp.Width -1 do
+    begin
+      if aImage[x,y] then
+        imgMain.Canvas.Pixels[x, y] := aOriginalImage[x, y];
+  end;
+end;
+
+procedure TMainForm.Draw(const aImage: TColorPixelMap; const aColor: TColor;
+  const aClear: boolean);
+var
+  vRect: TRect;
+
+  x,y: integer;
+begin
+  if aClear then
+  begin
+    vRect.Left := 0;
+    vRect.Top := 0;
+    vRect.Right := FImageInterp.Width;
+    vRect.Bottom := FImageInterp.Height;
+
+    imgMain.Canvas.Brush.Color := clWhite;
+    imgMain.Canvas.FillRect(vRect);
+  end;
+
+  for x := 0 to FImageInterp.Width -1 do
+    for y := 0 to FImageInterp.Height -1 do
+    begin
+      if aImage[x,y] <> clWhite then
+        imgMain.Canvas.Pixels[x,y] := aColor;
+    end;
 end;
 
 procedure TMainForm.Draw(const aImage: TBinaryPixelMap; const aColor: TColor;
@@ -245,10 +371,13 @@ end;
 procedure TMainForm.LoadImage(const aFileName: string);
 begin
   imgMain.Picture.LoadFromFile(aFileName);
+
   btnAction.Action := actSeparateColors;
 
   FImageInterp.Free;
   FImageInterp := TImageInterp.Create(imgMain);
+
+  imgMain.Canvas.Pixels[0,0] := clBlue;
 end;
 
 end.
