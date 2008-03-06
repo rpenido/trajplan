@@ -5,19 +5,19 @@ interface
 uses
   ExtCtrls, Classes, Graphics, Windows;
 
+const
+  START_COLOR = clLime;
+
 type
   TPathDirection = (pdNone, pdN, pdNE, pdE, pdSE, pdS, pdSW, pdW, pdNW);
   TPathDirectionSet = set of TPathDirection;
 
 
   TFrame = record
-    X: double;
-    Y: double;
-    Z: double;
-    A: double;
-    B: double;
-    C: double;
+    X: integer;
+    Y: integer;
 
+    Color: TColor;
     PathDirection: TPathDirection;
   end;
   PFrame = ^TFrame;
@@ -33,27 +33,30 @@ type
     procedure BeforeDestruction; override;
 
     procedure AddPoint(const aX, aY: integer;
-      const aDirection: TPathDirection = pdNone);
+      const aColor: TColor; const aDirection: TPathDirection = pdNone);
 
     property Point[const aIndex: integer]: PFrame read GetPoint; default;
     property Count: integer read GetCount;
   end;
 
   TBinaryPixelMap = array of array of boolean;
+  TColorPixelMap = array of array of TColor;
 
   TPathPoint = class
   private
     FPathDirection: TPathDirection;
     FX, FY: integer;
+    FColor: TColor;
     FPrevious, FNext: TPathPoint;
 
   public
     constructor Create(const aDirection: TPathDirection; const aX, aY: integer;
-      const aPrevious: TPathPoint); reintroduce;
+      const aColor: TColor; const aPrevious: TPathPoint); reintroduce;
 
     property PathDirection: TPathDirection read FPathDirection;
     property X: integer read FX;
     property Y: integer read FY;
+    property Color: TColor read FColor;
     property Previous: TPathPoint read FPrevious write FPrevious;
     property Next: TPathPoint read FNext write FNext;
   end;
@@ -86,6 +89,8 @@ type
     FImage: TImage;
 
     FWidth, FHeight: integer;
+    FColors: TColorPixelMap;
+    FAllColors: TBinaryPixelMap;
     FBlack: TBinaryPixelMap;
     FRed: TBinaryPixelMap;
     FGreen: TBinaryPixelMap;
@@ -104,11 +109,14 @@ type
   public
     constructor Create(const aImage: TImage);
 
+    function ThinAllStep(var aRemovedPixels: TBinaryPixelMap): boolean;
+    procedure RemoveStairCaseAll(var aRemovedPixels: TBinaryPixelMap);
     function ThinBlackStep(var aRemovedPixels: TBinaryPixelMap): boolean;
     procedure RemoveStairCaseBlack(var aRemovedPixels: TBinaryPixelMap);
     procedure FindXAxis(var a, b: double);
     procedure FindYAxis(var a, b: double);
     function GetOrigin: TPoint;
+    function GetFirstPoint: TPoint;
 
     property Image: TImage read FImage;
     property Width: integer read FWidth;
@@ -118,11 +126,13 @@ type
     property Red: TBinaryPixelMap read FRed;
     property Green: TBinaryPixelMap read FGreen;
     property Blue: TBinaryPixelMap read FBlue;
+    property AllColors: TBinaryPixelMap read FAllColors;
+    property Colors: TColorPixelMap read FColors;
     property ThinState: boolean read FThinState;
     property LastRemovedPixels: TBinaryPixelMap read FLastRemovedPixels;
 
     class procedure SeparateColors(const aImage: TImage; const aWidth, aHeight: integer;
-      var aBlack, aRed, aGreen, aBlue: TBinaryPixelMap);
+      var aBlack, aRed, aGreen, aBlue, aAllColors: TBinaryPixelMap; var aColors: TColorPixelMap);
 
     class procedure GetNeightBoardPixels(const aImage: TBinaryPixelMap; const aX, aY: integer;
       var aP1, aP2, aP3, aP4, aP5, aP6, aP7, aP8, aP9: boolean);
@@ -132,7 +142,7 @@ type
     class procedure StaircaseRemoval(var aImage: TBinaryPixelMap; const aWidth, aHeight: integer; var aRemovedPixels: TBinaryPixelMap);
     class function IsStaircaseMask(const aImage: TBinaryPixelMap; const aX, aY: integer): boolean;
 
-    class function FindPath(const aImage: TBinaryPixelMap; const aX, aY: integer): TPointList;
+    class function FindPath(const aImage: TBinaryPixelMap; const aColors: TColorPixelMap; const aX, aY: integer): TPointList;
     class function DirectionDist(const aOrig, aDest: TPathDirection): integer;
     class function GetNearDirection(const aPoint: TPathPoint;
       const aNeightBoardToVisit: TPathDirectionSet): TPathDirection;
@@ -149,7 +159,10 @@ type
     class procedure GetDeltaCoord(const aDirection: TPathDirection; out adX, adY: integer);
 
     class procedure Draw(const aImage: TImage; const aWidth, aHeight: integer;
-      const aPixelMap: TBinaryPixelMap; const aColor: integer; const aClear: boolean = True);
+      const aPixelMap: TBinaryPixelMap; const aColor: integer; const aClear: boolean = True); overload;
+
+    class procedure Draw(const aImage: TImage; const aWidth, aHeight: integer;
+      const aPixelMap: TBinaryPixelMap; const aOriginalImage: TImage; const aClear: boolean = True); overload;
   end;
 
 
@@ -715,12 +728,12 @@ end;
 constructor TImageInterp.Create(const aImage: TImage);
 begin
   FImage := aImage;
-  FWidth := aImage.Width;
-  FHeight := aImage.Height;
+  FWidth := aImage.Picture.Width;
+  FHeight := aImage.Picture.Height;
 
   SetLength(FLastRemovedPixels, FWidth, FHeight);
 
-  SeparateColors(FImage, FWidth, FHeight, FBlack, FRed, FGreen, FBlue);
+  SeparateColors(FImage, FWidth, FHeight, FBlack, FRed, FGreen, FBlue, FAllColors, FColors);
 end;
 
 class function TImageInterp.DirectionDist(const aOrig,
@@ -737,6 +750,34 @@ begin
     vDist := (vDirCount div 2) - (vDist mod (vDirCount div 2));
 
   result := vDist;
+end;
+
+class procedure TImageInterp.Draw(const aImage: TImage; const aWidth,
+  aHeight: integer; const aPixelMap: TBinaryPixelMap;
+  const aOriginalImage: TImage; const aClear: boolean);
+var
+  vRect: TRect;
+  x, y: integer;
+  vCanvas: TCanvas;
+begin
+  aImage.Picture.Bitmap.Width := aWidth;
+  aImage.Picture.Bitmap.Height := aHeight;
+  vCanvas := aImage.Picture.Bitmap.Canvas;
+  if aClear then
+  begin
+    vCanvas.Brush.Color := clWhite;
+    vRect.Left := 0;
+    vRect.Top := 0;
+    vRect.Right := aWidth;
+    vRect.Bottom := aHeight;
+    vCanvas.FillRect(vRect);
+  end;
+
+  for x := 0 to aWidth - 1 do
+    for y := 0 to aHeight - 1 do
+      if aPixelMap[x, y] then
+        vCanvas.Pixels[x, y] := aOriginalImage.Canvas.Pixels[x, y];
+
 end;
 
 class procedure TImageInterp.Draw(const aImage: TImage; const aWidth, aHeight: integer;
@@ -836,7 +877,7 @@ begin
 end;
 
 class function TImageInterp.FindPath(const aImage: TBinaryPixelMap;
-const aX, aY: integer): TPointList;
+ const aColors: TColorPixelMap; const aX, aY: integer): TPointList;
 var
   vDirectionCache: TDirectionCache;
 
@@ -851,7 +892,7 @@ begin
   result := TPointList.Create;
   vDirectionCache := TDirectionCache.Create(aImage);
   try
-    vPoint := TPathPoint.Create(pdNone, aX, aY, nil);
+    vPoint := TPathPoint.Create(pdNone, aX, aY, START_COLOR, nil);
 
     vNeightboardDirections := vDirectionCache.GetDirections(vPoint.X, vPoint.Y);
 
@@ -869,6 +910,7 @@ begin
         vNextPoint := TPathPoint.Create(vNearDirection,
           vPoint.X + dX,
           vPoint.Y + dY,
+          aColors[vPoint.X + dX, vPoint.Y + dY],
           vPoint);
 
         vNeightboardDirections := vDirectionCache.GetDirections(vNextPoint.X, vNextPoint.Y);
@@ -882,7 +924,7 @@ begin
       // Aproxima pontos por uma reta
       if Assigned(vPoint.Next) and
         Assigned(vPoint.Previous) and
-        (vPoint.PathDirection = vNearDirection) then
+        (vPoint.PathDirection = vNearDirection) and (vPoint.Color = vPoint.Next.Color) then
         begin
           vPoint.Previous.Next := vPoint.Next;
           vPoint.Next.Previous := vPoint.Previous;
@@ -894,7 +936,7 @@ begin
     vPoint := vFirstPoint;
     while Assigned(vPoint) do
     begin
-      Result.AddPoint(vPoint.X, vPoint.Y, vPoint.PathDirection);
+      Result.AddPoint(vPoint.X, vPoint.Y, vPoint.Color, vPoint.PathDirection);
       vPoint := vPoint.Next;
     end;
 
@@ -1018,6 +1060,41 @@ begin
     begin
       result := cDir;
       break;
+    end;
+end;
+
+function TImageInterp.GetFirstPoint: TPoint;
+var
+  x, y: integer;
+
+  P1, P2, P3, P4, P5, P6, P7, P8, P9: boolean;
+  NN: integer;
+begin
+  for x := 0 to FWidth - 1 do
+    for y := 0 to FHeight - 1 do
+    begin
+      if FAllColors[x,y] and (FColors[x,y] = START_COLOR) then
+      begin
+        GetNeightBoardPixels(FAllColors, x, y, P1, P2, P3, P4, P5, P6, P7, P8, P9);
+
+        // Número de pixels coloridos na vizinhança
+        NN := Integer(P2)
+          +Integer(P3)
+          +Integer(P4)
+          +Integer(P5)
+          +Integer(P6)
+          +Integer(P7)
+          +Integer(P8)
+          +Integer(P9);
+
+        if (NN = 1) then
+        begin
+          result.X := x;
+          result.Y := y;
+          exit;
+        end;
+
+      end;
     end;
 end;
 
@@ -1149,6 +1226,12 @@ begin
   result.Y := Round( aX * result.X + bX );
 end;
 
+procedure TImageInterp.RemoveStairCaseAll(var aRemovedPixels: TBinaryPixelMap);
+begin
+  StaircaseRemoval(FAllColors, FWidth, FHeight, aRemovedPixels);
+  FLastRemovedPixels := aRemovedPixels;
+end;
+
 procedure TImageInterp.RemoveStairCaseBlack(
   var aRemovedPixels: TBinaryPixelMap);
 begin
@@ -1156,7 +1239,7 @@ begin
 end;
 
 class procedure TImageInterp.SeparateColors(const aImage: TImage; const aWidth, aHeight: integer;
-  var aBlack, aRed, aGreen, aBlue: TBinaryPixelMap);
+  var aBlack, aRed, aGreen, aBlue, aAllColors: TBinaryPixelMap; var aColors: TColorPixelMap);
 var
   x, y: integer;
 begin
@@ -1164,9 +1247,18 @@ begin
   SetLength(aRed, aWidth, aHeight);
   SetLength(aGreen, aWidth, aHeight);
   SetLength(aBlue, aWidth, aHeight);
+  SetLength(aAllColors, aWidth, aHeight);
+  SetLength(aColors, aWidth, aHeight);
 
   for x := 0 to aWidth - 1 do
     for y := 0 to aHeight - 1 do
+    begin
+
+      aColors[x,y] := aImage.Canvas.Pixels[x, y];
+
+      if aImage.Canvas.Pixels[x, y] <> clWhite then
+         aAllColors[x, y] := True;
+
       case aImage.Canvas.Pixels[x, y] of
         clBlack:
           aBlack[x, y] := True;
@@ -1177,6 +1269,7 @@ begin
         clBlue:
           aBlue[x, y] := True;
       end;
+    end;
 end;
 
 class procedure TImageInterp.StaircaseRemoval(var aImage: TBinaryPixelMap;
@@ -1185,7 +1278,6 @@ var
   x, y: integer;
   vRemove: boolean;
 begin
-  exit;
   for x := 1 to aWidth - 2 do
     for y := 1 to aHeight - 2 do
     begin
@@ -1206,6 +1298,12 @@ begin
     vContinue := ThinStep(aImage, aWidth, aHeight, vBool, aRemovedPixels);
 end;
 
+function TImageInterp.ThinAllStep(var aRemovedPixels: TBinaryPixelMap): boolean;
+begin
+  result := ThinStep(FAllColors, FWidth, FHeight, FThinState, aRemovedPixels);
+  FLastRemovedPixels := aRemovedPixels;
+end;
+
 function TImageInterp.ThinBlackStep(var aRemovedPixels: TBinaryPixelMap): boolean;
 begin
   result := ThinStep(FBlack, FWidth, FHeight, FThinState, aRemovedPixels);
@@ -1215,17 +1313,14 @@ end;
 { TPointList }
 
 procedure TPointList.AddPoint(const aX, aY: integer;
-  const aDirection: TPathDirection);
+  const aColor: TColor; const aDirection: TPathDirection);
 var
   vPoint: PFrame;
 begin
   New(vPoint);
   vPoint.X := aX;
   vPoint.Y := aY;
-  vPoint.Z := 0;
-  vPoint.A := 180;
-  vPoint.B := 180;
-  vPoint.C := 180;
+  vPoint.Color := aColor;
 
   vPoint.PathDirection := aDirection;
 
@@ -1317,11 +1412,12 @@ end;
 { TPathPoint }
 
 constructor TPathPoint.Create(const aDirection: TPathDirection; const aX,
-  aY: integer; const aPrevious: TPathPoint);
+  aY: integer; const aColor: TColor; const aPrevious: TPathPoint);
 begin
   FPathDirection := aDirection;
   FX := aX;
   FY := aY;
+  FColor := aColor;
 
   FPrevious := aPrevious;
 end;

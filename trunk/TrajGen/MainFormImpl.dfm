@@ -109,6 +109,14 @@ object MainForm: TMainForm
       Caption = 'Eixo Y'
       OnExecute = actFindYAxisExecute
     end
+    object actFindFirstPoint: TAction
+      Caption = 'Procura In'#237'cio'
+      OnExecute = actFindFirstPointExecute
+    end
+    object actFindPath: TAction
+      Caption = 'Encontrar trajet'#243'ria'
+      OnExecute = actFindPathExecute
+    end
   end
   object dlgOpen: TOpenDialog
     DefaultExt = '*.bmp'
