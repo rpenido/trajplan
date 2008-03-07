@@ -15,11 +15,7 @@ type
     dlgOpen: TOpenDialog;
     btnReloadImage: TButton;
     actReloadImage: TAction;
-    imgBlack: TImage;
-    imgBlue: TImage;
-    imgRed: TImage;
     btnAction: TButton;
-    imgGreen: TImage;
     actSeparateColors: TAction;
     actThinStep: TAction;
     actStaircaseRemoval: TAction;
@@ -61,7 +57,11 @@ uses
 {$R *.dfm}
 
 procedure TMainForm.actFindFirstPointExecute(Sender: TObject);
+var
+  vJob: IJob;
 begin
+  vJob := StartJob;
+
   Draw(FImageInterp.Colors, $BBBBBB, True);
   Draw(FImageInterp.AllColors, FImageInterp.Colors, False);
   FFirstPoint := FImageInterp.GetFirstPoint;
@@ -77,12 +77,15 @@ end;
 
 procedure TMainForm.actFindPathExecute(Sender: TObject);
 var
+  vJob: IJob;
+
   vPointList: TPointList;
   i: integer;
   vTst: TStringList;
 
   vColorStr: string;
 begin
+  vJob := StartJob;
 
   Draw(FImageInterp.Colors, $BBBBBB, True);
 
@@ -94,7 +97,7 @@ begin
     begin
       if vPointList[i].Color = clBlack then
         vColorStr := 'Black'
-      else if vPointList[i].Color = clGreen then
+      else if vPointList[i].Color = clLime then
         vColorStr := 'Green'
       else
         vColorStr := 'None';
@@ -154,13 +157,20 @@ begin
 end;
 
 procedure TMainForm.actLoadImageExecute(Sender: TObject);
+var
+  vJob: IJob;
 begin
+  vJob := StartJob;
   if dlgOpen.Execute then
     LoadImage(dlgOpen.FileName);
 end;
 
 procedure TMainForm.actReloadImageExecute(Sender: TObject);
+var
+  vJob: IJob;
 begin
+  vJob := StartJob;
+
   if FileExists(dlgOpen.FileName) then
     LoadImage(dlgOpen.FileName);
 end;
@@ -240,7 +250,7 @@ begin
   if FImageInterp.ThinState then
     vRemovedColor := clRed
   else
-    vRemovedColor := clLime;
+    vRemovedColor := clBlue;
 
   Draw(vRemovedPixels, vRemovedColor);
   Draw(FImageInterp.AllColors, FImageInterp.Colors);
@@ -372,10 +382,11 @@ procedure TMainForm.LoadImage(const aFileName: string);
 begin
   imgMain.Picture.LoadFromFile(aFileName);
 
-  btnAction.Action := actSeparateColors;
+  btnAction.Action := actThinStep;
 
   FImageInterp.Free;
   FImageInterp := TImageInterp.Create(imgMain);
+  FThinCount := 0;
 
   imgMain.Canvas.Pixels[0,0] := clBlue;
 end;

@@ -4,7 +4,7 @@ object MainForm: TMainForm
   BorderStyle = bsSingle
   Caption = 'Teste'
   ClientHeight = 654
-  ClientWidth = 1058
+  ClientWidth = 832
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,7 +14,6 @@ object MainForm: TMainForm
   OldCreateOrder = False
   Position = poScreenCenter
   Visible = True
-  WindowState = wsMaximized
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
@@ -23,34 +22,6 @@ object MainForm: TMainForm
     Top = 16
     Width = 800
     Height = 600
-    Stretch = True
-  end
-  object imgBlack: TImage
-    Left = 822
-    Top = 8
-    Width = 200
-    Height = 150
-    Stretch = True
-  end
-  object imgBlue: TImage
-    Left = 822
-    Top = 476
-    Width = 200
-    Height = 150
-    Stretch = True
-  end
-  object imgRed: TImage
-    Left = 822
-    Top = 164
-    Width = 200
-    Height = 150
-    Stretch = True
-  end
-  object imgGreen: TImage
-    Left = 822
-    Top = 320
-    Width = 200
-    Height = 150
     Stretch = True
   end
   object btnLoadImage: TButton
