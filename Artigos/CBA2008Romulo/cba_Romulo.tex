@@ -194,32 +194,104 @@ em que $x$ pode assumir qualquer valor, 0 ou 1.
 \section{Definição da Trajetória}
 
 Uma vez que a linha de trajetória passou pelo algoritmo de
-afinação, é necessário ordenar estes pontos e gerar a trajetória
-para o robô. O primeiro passo é definir qual será o ponto inicial.
+afinação, é necessário ordenar os pontos e gerar a trajetória para
+o robô. O primeiro passo é definir qual será o ponto inicial.
+
+%*** Explicar a necessidade de se definir um ponto inicial ???? ***
+O ponto inicial será o ponto que possuir número de vizinhos igual
+a 1 e possuir a cor verde (escolhida arbitrariamente). A cor
+diferente foi utilizada já que a trajetória desenhada possui duas
+extremidades, e o pixel de cada extremidade atende ao critério de
+possuir apenas um vizinho.
 
 Definido o ponto inicial, é necessário ordenar todos os outros
 pontos para formar a trajetória. Para esta ordenação, é criada uma
-matriz [x,y] equivalente à imagem e para cada ponto pertencente à
-trajetória é associada a informação referente à sua conectividade
-e ao tipo de trajetória.
+matriz de direções [x,y] equivalente à imagem e para cada ponto
+pertencente à trajetória é associada a informação referente à sua
+conectividade, como mostrado na Figura \ref{fig:MatDir}.
+
+\begin{figure}[htb]
+    \center
+    % Figura de uma imagem 4x4 (ou outro tamanho que caiba na coluna) mostrando uma trajetória e a matriz de
+    \caption{???}
+    \label{fig:MatDir}
+\end{figure}
+
+%*** Explicar através de texto como a informação da conectividade ? Mostrar estruturas utilizadas ? ***
+
+
+Após criada a matriz de direções, a partir do ponto inicial da
+trajetória,  os pontos são ordenados.
+
+O algoritmo se baseia em percorrer os pontos adjacentes até que
+não existam mais pontos para serem percorridos. Caso exista mais
+de um ponto adjacente a um mesmo pixel, será escolhido aquele que
+cause menor modificação na direção e sentido do caminho percorrido
+pelo robô. Caso dois pontos causem a mesma alteração no movimento,
+serão verificadas recursivamente as direções dos pontos
+anteriores. Caso o empate persista, é escolhido um ponto de acordo
+com a ordem N, NE, E, SE, S, SW, W, NW (mesma ordem de numeração
+dos pontos no algoritmo de Zhang-Suen).
+
+A Figura \ref{fig:SortExample} mostra ?????
+
+\begin{figure}[htb]
+    \center
+    % Aplicar o algoritmo à figura anterior em 3 ou 4 passos
+    \caption{???}
+    \label{fig:SortExample}
+\end{figure}
+
+Os pontos escolhidos são armazenados na forma de uma lista
+encadeada. Além das coordenadas [x,y], a cor do ponto também é
+armazenada para futuramente definir os parâmetros da trajetória
+(por exemplo, velocidade de movimentação, parâmetros de soldagem
+etc.).
 
 \section{Geração do programa para o robô}
-Depois de montado o grafo com informações da trajetória e de
+Depois de montada a lista com informações da trajetória e de
 parâmetros de utilização, é necessário gerar o programa na
 linguagem do robô para executar estas tarefas.
 
-O arquivo gerado é feito baseado em um template.
+O arquivo é gerado baseando-se em um modelo de acordo com a
+linguagem do robô. O objetivo de se utilizar o modelo é permitir
+que o usuário possa inserir informações específicas e até
+programar alguma tarefa antes da execução da trajetória. A
+programação da trajetória é inserida no código em uma posição
+definida no modelo.
 
-Para este trabalho, foi utilizado um manipulador robótica KUKA
-modelo XXXXXXXXXXXX.
 
+\section{Resultados}
 
+A metodologia apresentada foi aplicada na geração de um programa
+para o manipulador robótico KUKA modelo KR-6 com controlador
+KRC-2.
+
+% *** Mostrar exemplo de template ***
+
+Como todas as informações relativas à trajetória são independentes
+do modelo de robo escolhido, com poucas alterações pode ser
+adaptado para qualquer outro modelo ou fabricante.
 
 \section{Conclusões}
 
+Foi apresentada uma metodologia para geração de trajetórias para
+robôs industriais a partir de imagens bidimensionais geradas
+artificialmente. O programa se mostrou eficiente, sendo capaz de
+tratar inclusive trajetórias que possuam cruzamentos, escolhendo a
+direção e sentido de movimento mais apropriados.
+
+Atualmente, encontram-se em desenvolvimento uma metodologia para
+definição automática do sistema de coordenadas e escala do desenho
+a partir de eixos representados na própria imagem. Além disso,
+técnicas de tratamento de imagens estão sendo estudadas para ser
+possível a utilização de fotografias no próprio espaço de trabalho
+do robô.
+
 \section*{Agradecimentos}
 
-    Os autores agradecem à FAPEMIG pelo apoio financeiro.
+    Os autores agradecem ao PIBIC/CNPq pelo apoio financeiro e à KUKA Roboter pela disponibilização
+    do equipamento para realização dos testes.
 
 % BIBLIOGRAFIA
 \bibliography{bibliRomulo}
