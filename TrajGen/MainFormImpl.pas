@@ -23,6 +23,9 @@ type
     actFindYAxis: TAction;
     actFindFirstPoint: TAction;
     actFindPath: TAction;
+    dlgSave: TSaveDialog;
+    Button1: TButton;
+    actSaveImage: TAction;
     procedure actLoadImageExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure actReloadImageExecute(Sender: TObject);
@@ -33,6 +36,7 @@ type
     procedure actFindYAxisExecute(Sender: TObject);
     procedure actFindFirstPointExecute(Sender: TObject);
     procedure actFindPathExecute(Sender: TObject);
+    procedure actSaveImageExecute(Sender: TObject);
   private
     FImageInterp: TImageInterp;
     FThinCount: integer;
@@ -175,6 +179,12 @@ begin
     LoadImage(dlgOpen.FileName);
 end;
 
+procedure TMainForm.actSaveImageExecute(Sender: TObject);
+begin
+  if dlgSave.Execute then
+    imgMain.Picture.SaveToFile(dlgSave.FileName);
+end;
+
 procedure TMainForm.actSeparateColorsExecute(Sender: TObject);
 var
   vJob: IJob;
@@ -229,7 +239,7 @@ begin
   Draw(vRemovedPixels, clRed);
   Draw(FImageInterp.AllColors, FImageInterp.Colors);
 
-  CirclePoints(vRemovedPixels, clRed, 5);
+//  CirclePoints(vRemovedPixels, clRed, 5);
 
   btnAction.Action := actFindFirstPoint;
 end;
@@ -280,8 +290,8 @@ begin
   imgMain.Canvas.Pen.Width := 1;  
   imgMain.Canvas.Brush.Style := bsClear;
 
-  for x := 0 to FImageInterp.Height -1 do
-    for y := 0 to FImageInterp.Width -1 do
+  for x := 0 to FImageInterp.Width -1 do
+    for y := 0 to FImageInterp.Height -1 do
     begin
       if aImage[x,y] then
         imgMain.Canvas.Ellipse(x-aRadius, y-aRadius, x+aRadius, y+aRadius);
@@ -306,8 +316,8 @@ begin
     imgMain.Canvas.FillRect(vRect);
   end;
 
-  for x := 0 to FImageInterp.Height -1 do
-    for y := 0 to FImageInterp.Width -1 do
+  for x := 0 to FImageInterp.Width -1 do
+    for y := 0 to FImageInterp.Height -1 do
     begin
       if aImage[x,y] then
         imgMain.Canvas.Pixels[x, y] := aOriginalImage[x, y];
@@ -388,7 +398,7 @@ begin
   FImageInterp := TImageInterp.Create(imgMain);
   FThinCount := 0;
 
-  imgMain.Canvas.Pixels[0,0] := clBlue;
+//  imgMain.Canvas.Pixels[0,0] := clBlue;
 end;
 
 end.

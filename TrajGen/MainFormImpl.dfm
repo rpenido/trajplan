@@ -15,6 +15,9 @@ object MainForm: TMainForm
   Position = poScreenCenter
   Visible = True
   OnCreate = FormCreate
+  DesignSize = (
+    832
+    654)
   PixelsPerInch = 96
   TextHeight = 13
   object imgMain: TImage
@@ -22,6 +25,7 @@ object MainForm: TMainForm
     Top = 16
     Width = 800
     Height = 600
+    Anchors = [akLeft, akTop, akRight, akBottom]
     Stretch = True
   end
   object btnLoadImage: TButton
@@ -49,6 +53,14 @@ object MainForm: TMainForm
     Default = True
     TabOrder = 0
   end
+  object Button1: TButton
+    Left = 288
+    Top = 621
+    Width = 75
+    Height = 25
+    Action = actSaveImage
+    TabOrder = 3
+  end
   object aclMain: TActionList
     Left = 16
     Top = 16
@@ -59,6 +71,10 @@ object MainForm: TMainForm
     object actReloadImage: TAction
       Caption = 'Recarregar Imagem'
       OnExecute = actReloadImageExecute
+    end
+    object actSaveImage: TAction
+      Caption = 'Salvar'
+      OnExecute = actSaveImageExecute
     end
     object actSeparateColors: TAction
       Caption = 'Separar Cores'
@@ -93,6 +109,11 @@ object MainForm: TMainForm
     DefaultExt = '*.bmp'
     Filter = 'Imagem Bitmap|*.bmp'
     Left = 48
+    Top = 16
+  end
+  object dlgSave: TSaveDialog
+    DefaultExt = 'bmp'
+    Left = 80
     Top = 16
   end
 end
