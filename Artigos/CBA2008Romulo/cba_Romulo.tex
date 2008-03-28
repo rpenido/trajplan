@@ -56,7 +56,15 @@
 \keywords{Enter Keywords Here.}
 \selectlanguage{brazil}
 \begin{abstract}
-    Resumo
+A utilização de manipuladores robóticos na manufatura...
+
+A busca de células de manufaturas flexíveis estimula o
+desenvolvimento de robôs e, por conseqüência, sua forma de
+programação. Neste artigo é apresentada uma metodologia para
+geração de trajetórias para manipuladores robóticos utilizando
+técnicas de visão computacional, simplificando bastante a tarefa
+de programação do robô.
+
 \end{abstract}
 \keywords{????????????????} ]
 
@@ -64,7 +72,28 @@
 
 \section{Introdução}
 
-% Falar das dificuldades de um operador de programar o robô
+Os primeiros robôs industriais começaram a ser fabricados
+ e utilizados com o intuito de se substituir o ser
+humano em tarefas em que ele não poderia realizar, seja por causa
+de suas próprias limitações físicas, ou por envolverem condições
+desagradáveis ou extremas. Além disto, a utilização de robôs
+industriais possibilita uma melhora na qualidade do produto,
+uniformizando a produção, eliminando perdas e refugos.
+
+Com os avanços tecnológicos, a utilização de manipuladores
+robóticos tem sido cada vez mais presente em todo o mundo. Isso
+deve à sua grande versatilidade visto que um robô pode ser
+reprogramado e utilizado para as mais diversas tarefas dentro de
+uma manufatura.
+
+O sucesso na utilização de robôs em sistemas de manufatura
+flexíveis desenvolvidos depende de interfaces homem-máquina
+eficientes e habilidades do operador \cite{blá}.
+
+Atualmente, a programação do robô é feita através de um software
+no qual é possível programar o robô diretamente no
+chão-de-fábrica, "ensinando" ao robô os movimentos que devem ser
+executados, ou através de uma linguagem de programação.
 
 A programação \emph{on-line} de um robô, de um modo geral, pode
 consumir muito tempo, evoluindo de modo desproporcional ao aumento
@@ -86,7 +115,7 @@ identificação de trajetórias em imagens bidimensionais geradas por
 computador. Desta forma o operador poderia, através de um programa
 simples de edição de imagens, definir a trajetória do robô para
 determinada operação sem a necessidade de conhecer a linguagem de
-programação do robô. A utilização
+programação do robô.
 
 \section{Algoritmo de Afinamento}
 O afinamento é uma operação aplicada a imagens binárias para
@@ -224,10 +253,10 @@ pixels pertencentes à trajetória, como mostrado na Figura
 \begin{figure}[htb]
     \centerline{
         \subfigure[]{\includegraphics[width=100pt]{images/MatDir1.eps}
-        \label{fig:XXX}}
+        \label{fig:MatDir-a}}
         \hfil
         \subfigure[]{\includegraphics[width=100pt]{images/MatDir2.eps}
-        \label{fig:XXXX}}
+        \label{fig:MatDir-b}}
     }
     \caption{Exemplo de figura representando uma trajetória com cruzamento: pontos da trajetória (a) e direções
     dos pontos vizinhos (b).}
@@ -246,50 +275,89 @@ persista, é escolhido um ponto de acordo com a ordem N, NE, E, SE,
 S, SW, W, NW (mesma ordem de numeração dos pontos no algoritmo de
 Zhang-Suen).
 
+Caso existam vários pontos alinhados, os pontos intermediários
+serão removidos. Assim, o volume de pontos gerado para o robô será
+reduzido significativamente, sem modificar a trajetória.
+
 A Figura \ref{fig:ExOrd} mostra a aplicação do algoritmo passo a
 passo para uma trajetória que possui um cruzamento.
-
-
 
 \begin{figure}[htb]
     \centerline{
         \subfigure[]{\includegraphics[width=90pt]{images/Ord1.eps}
-        \label{fig:XXX}}
+        \label{fig:ExOrd-a}}
         \hfil
         \subfigure[]{\includegraphics[width=90pt]{images/Ord2.eps}
-        \label{fig:XXXX}}
+        \label{fig:ExOrd-b}}
     }
     \centerline{
         \subfigure[]{\includegraphics[width=90pt]{images/Ord3.eps}
-        \label{fig:XXX}}
+        \label{fig:ExOrd-c}}
         \hfil
         \subfigure[]{\includegraphics[width=90pt]{images/Ord4.eps}
-        \label{fig:XXXX}}
+        \label{fig:ExOrd-d}}
     }
     \centerline{
         \subfigure[]{\includegraphics[width=90pt]{images/Ord5.eps}
-        \label{fig:XXX}}
+        \label{fig:ExOrd-e}}
         \hfil
         \subfigure[]{\includegraphics[width=90pt]{images/Ord6.eps}
-        \label{fig:XXXX}}
+        \label{fig:ExOrd-f}}
     }
     \centerline{
         \subfigure[]{\includegraphics[width=90pt]{images/Ord7.eps}
-        \label{fig:XXX}}
+        \label{fig:ExOrd-g}}
         \hfil
         \subfigure[]{\includegraphics[width=90pt]{images/Ord8.eps}
-        \label{fig:XXXX}}
+        \label{fig:ExOrd-h}}
     }
     \centerline{
         \subfigure[]{\includegraphics[width=90pt]{images/Ord9.eps}
-        \label{fig:XXX}}
+        \label{fig:ExOrd-i}}
     }
     \caption{Ordenamento dos pontos de acordo com a direção da trajetória.}
     \label{fig:ExOrd}
 \end{figure}
 
-EXPLICAR A FIGURA
+O primeiro passo do algoritmo é definir o ponto inicial. Na Figura
+\ref{fig:ExOrd-a} é mostrado o ponto inicial em verde, aonde a
+primeira iteração é realizada. Neste momento, só há uma direção
+possível para ser seguida, logo, o próximo ponto da trajetória
+deve ser o ponto na direção SE.
 
+Neste ponto, existem três direções possíveis:  NE, E e SW, como
+mostra a Figura \ref{fig:ExOrd-b}. A direção E será escolhida pois
+é a que causa uma menor variação de direção do robô.
+
+Logo após, o ponto escolhido e verificado. A partir dele, três
+direções possíveis podem ser escolhidas: N, NE e SE. Visto que o
+robô estará se deslocando na direção E (por causa do movimento
+anterior), duas das possibilidades possíveis proporcionam a mesma
+mudança de direção em relação ao movimento anterior: NE e SE.
+Ambas ocasionam uma mudança de direção menor do que se o robô
+fosse para a direção restante (N). Como o critério da direção
+anterior não é suficiente para escolher qual ponto seguir, a
+direção do passo imediatamente anterior a esta será avaliada. Como
+esta direção anterior é  SE (mostrado na Figura \ref{fig:ExOrd-b},
+o caminho a escolhido é seguir a direção SE, como mostrado na
+Figura \ref{fig:ExOrd-c}.
+
+As próximas escolhas são feitas de forma simples, visto que só
+existe uma direção a ser seguida, como mostrado na Figura
+\ref{fig:ExOrd-d} e Figura \ref{fig:ExOrd-e}. Ao chegar novamente
+no ponto indicado pela Figura \ref{fig:ExOrd-f}, o algoritmo
+selecionará a direção NE, pois é a única deste ponto que ainda não
+foi visitada.
+
+No próximo passo, mostrado na Figura \ref{fig:ExOrd-g}, existem
+duas possibilidades de direções, S e E, sendo que E leva a uma
+menor variação da direção anterior.
+
+No último passo a direção escolhida é NE como mostrado na
+\ref{fig:ExOrd-h}. O algoritmo continua até encontrar um ponto que
+não possui mais nenhuma direção disponível a ser seguida. A
+trajetória encontrada para esta configuração é exibida na
+\ref{fig:ExOrd-i}.
 
 Os pontos escolhidos são armazenados na forma de uma lista
 encadeada. Além das coordenadas [x,y], a cor do ponto também é
@@ -308,12 +376,15 @@ execução da trajetória. A programação da trajetória é inserida no
 código em uma posição definida no modelo entre as marcações
 \begin{ttfamily}; \#MainSection\#Begin\#\end{ttfamily} e
 \begin{ttfamily}; \#MainSection\#End\#\end{ttfamily}, como mostrado na
-Figura \ref{fig:TemplateKUKA}.
+Figura \ref{fig:TemplateModProg}.
 
 \begin{figure}[htb]
-%    \sffamily
-   {\ttfamily
-   {\footnotesize
+
+
+    \framebox{
+    \begin{minipage}{200pt}
+    \ttfamily
+    \footnotesize
     DEF \#\$FileName\#( ) \\
     INI \\
     \\
@@ -322,18 +393,26 @@ Figura \ref{fig:TemplateKUKA}.
     PTP XHOME \\
     \\
     ; \#MainSection\#Begin\# \\
+    LIN \{x 1, y 1,z 0,a 0,b 0,c 0\} C\_VEL \\
+    LIN \{x 2, y 2,z 0,a 0,b 0,c 0\} C\_VEL \\
+    LIN \{x 3, y 2,z 0,a 0,b 0,c 0\} C\_VEL \\
+    LIN \{x 4, y 3,z 0,a 0,b 0,c 0\} C\_VEL \\
+    LIN \{x 3, y 4,z 0,a 0,b 0,c 0\} C\_VEL \\
+    LIN \{x 2, y 4,z 0,a 0,b 0,c 0\} C\_VEL \\
+    LIN \{x 1, y 3,z 0,a 0,b 0,c 0\} C\_VEL \\
+    LIN \{x 2, y 2,z 0,a 0,b 0,c 0\} C\_VEL \\
+    LIN \{x 3, y 1,z 0,a 0,b 0,c 0\} C\_VEL \\
+    LIN \{x 4, y 1,z 0,a 0,b 0,c 0\} C\_VEL \\
+    LIN \{x 5, y 0,z 0,a 0,b 0,c 0\} C\_VEL \\
     ; \#MainSection\#End\# \\
     \\
     PTP XHOME \\
-    END}}
+    END
+    \end{minipage}
+    }
     \caption{Modelo de programa para KRC-2.}
-    \label{fig:TemplateKUKA}
+    \label{fig:ModProg}
 \end{figure}
-
-COLOCAR PROGRAMA PARA OS PONTOS DA FIGURA 3
-
-
-
 
 \section{Aplicação da metodologia}
 A metodologia apresentada foi aplicada na geração de um programa
@@ -348,59 +427,51 @@ algoritmos de processamento da imagem.
 \begin{figure}[htb]
     \centerline{
         \subfigure[]{\fbox{\includegraphics[width=100pt]{images/origin.eps}}
-        \label{fig:XXX}}
+        \label{fig:Result-a}}
         \hfil
         \subfigure[]{\fbox{\includegraphics[width=100pt]{images/thin1.eps}}
-        \label{fig:XXXX}}
+        \label{fig:Result-b}}
     }
     \centerline{
         \subfigure[]{\fbox{\includegraphics[width=100pt]{images/thin2.eps}}
-        \label{fig:XXX}}
+        \label{fig:Result-c}}
         \hfil
         \subfigure[]{\fbox{\includegraphics[width=100pt]{images/thinResult.eps}}
-        \label{fig:XXXX}}
+        \label{fig:Result-d}}
     }
     \centerline{
         \subfigure[]{\fbox{\includegraphics[width=100pt]{images/staircaseremov.eps}}
-        \label{fig:XXX}}
+        \label{fig:Result-e}}
         \hfil
         \subfigure[]{\fbox{\includegraphics[width=100pt]{images/startpoint.eps}}
-        \label{fig:XXXX}}
+        \label{fig:Result-f}}
     }
     \centerline{
         \subfigure[]{\fbox{\includegraphics[width=100pt]{images/result.eps}}
-        \label{fig:XXX}}
+        \label{fig:Result-g}}
     }
     \caption{Etapas do processamento de uma imagem.}
     \label{fig:Resultados}
 \end{figure}
 
-FALAR AQUI DAS ETAPAS
+A Figura \ref{fig:Result-a} mostra a imagem utilizada para testar
+a metodologia apresentada neste artigo. O primeiro passo é, sobre
+esta imagem, aplicar o algoritmo de afinamento.
 
-COLOCAR EM DETALHE O CRUZAMENTO
+Na Figura \ref{fig:Result-b} são mostrados na cor vermelha os
+pixels que serão removidos pelo critério de seleção feito na
+primeira subiteração e a Figura \ref{fig:Result-c} mostra em azul
+os pixels que serão removidos na segunda subiteração.
 
-%Em determinados casos de linhas com cruzamento, os algoritmos para
-%detecção da trajetória falharam. Isso se deve ao fato do algoritmo
-%de afinamento ter alterado ligeiramente a topologia da região do
-%cruzamento de linhas, como mostrado na Figura
-%\ref{fig:Cruzamento}.
+A Figura \ref{fig:Result-d} apresenta o resultado final do
+processo de afinamento. Uma vez que a imagem já foi afinada, é
+aplicado o método de remoção de escadas. Os pixels redundantes são
+destacados na Figura \ref{fig:Result-e} na cor vermelha.
 
-%\begin{figure}[htb]
-%   \centerline{
-%       \subfigure[XXX 1ª XXX]{\fbox{\includegraphics[width=100pt]{images/cross1.eps}}
-%       \label{fig:XXX}}
-%       \hfil
-%       \subfigure[XXX 2ª XXX]{\fbox{\includegraphics[width=100pt]{images/cross2.eps}}
-%       \label{fig:XXXX}}
-%   }
-%   \centerline{
-%       \subfigure[XXX 2ª XXX]{\fbox{\includegraphics[width=100pt]{images/cross3.eps}}
-%       \label{fig:XXXXX}}
-%   }
-%
-%   \caption{\it ??????????}
-%    \label{fig:Cruzamento}
-%\end{figure}
+Após todos os pixels desnecessários serem removidos, o ponto
+inicial da trajetória é identificado, como mostra a Figura
+\ref{fig:Result-f}. A Figura \ref{fig:Result-g} mostra os pixels
+selecionados durante a ordenação, que caracterizam a trajetória.
 
 Como todas as informações relativas à trajetória são independentes
 do modelo de robô escolhido, com poucas alterações pode ser
@@ -428,3 +499,28 @@ testes.
 % BIBLIOGRAFIA
 \bibliography{bibliRomulo}
 \end{document}
+
+
+% ##################### TEXTO REMOVIDO #####################
+Em determinados casos de linhas com cruzamento, os algoritmos para
+detecção da trajetória falharam. Isso se deve ao fato do algoritmo
+de afinamento ter alterado ligeiramente a topologia da região do
+cruzamento de linhas, como mostrado na Figura
+\ref{fig:Cruzamento}.
+
+\begin{figure}[htb]
+   \centerline{
+       \subfigure[XXX 1ª XXX]{\fbox{\includegraphics[width=100pt]{images/cross1.eps}}
+       \label{fig:XXX}}
+       \hfil
+       \subfigure[XXX 2ª XXX]{\fbox{\includegraphics[width=100pt]{images/cross2.eps}}
+       \label{fig:XXXX}}
+   }
+   \centerline{
+       \subfigure[XXX 2ª XXX]{\fbox{\includegraphics[width=100pt]{images/cross3.eps}}
+       \label{fig:XXXXX}}
+   }
+
+   \caption{\it ??????????}
+    \label{fig:Cruzamento}
+\end{figure}
