@@ -1,7 +1,6 @@
 \documentclass[conference,harvard,brazil,english]{sbatex}
 \usepackage[latin1]{inputenc}
 \usepackage{ae}
-\usepackage{colortbl}
 \usepackage{graphicx}
 \usepackage{subfigure}
 
@@ -72,28 +71,28 @@ de programação do robô.
 
 \section{Introdução}
 
-Os primeiros robôs industriais começaram a ser fabricados
- e utilizados com o intuito de se substituir o ser
-humano em tarefas em que ele não poderia realizar, seja por causa
-de suas próprias limitações físicas, ou por envolverem condições
-desagradáveis ou extremas. Além disto, a utilização de robôs
-industriais possibilita uma melhora na qualidade do produto,
-uniformizando a produção, eliminando perdas e refugos.
+Os primeiros robôs industriais começaram a ser fabricados e
+utilizados com o intuito de se substituir o ser humano em tarefas
+que ele não poderia realizar, seja por causa de suas próprias
+limitações físicas, ou por envolverem condições desagradáveis ou
+extremas. Além disto, a utilização de robôs industriais possibilita
+uma melhora na qualidade do produto, uniformizando a produção,
+eliminando perdas e refugos.
 
-Com os avanços tecnológicos, a utilização de manipuladores
-robóticos tem sido cada vez mais presente em todo o mundo. Isso
-deve à sua grande versatilidade visto que um robô pode ser
-reprogramado e utilizado para as mais diversas tarefas dentro de
-uma manufatura.
+Com os avanços tecnológicos, a utilização de manipuladores robóticos
+tem estado cada vez mais presente em todo o mundo. Isso se deve à
+sua grande versatilidade visto que um robô pode ser reprogramado e
+utilizado para as mais diversas tarefas dentro de um sistema de
+manufatura.
 
-O sucesso na utilização de robôs em sistemas de manufatura
-flexíveis desenvolvidos depende de interfaces homem-máquina
-eficientes e habilidades do operador \cite{blá}.
+O sucesso e eficiência na utilização de robôs em sistemas de
+manufatura flexíveis desenvolvidos depende de interfaces
+homem-máquina eficientes e habilidades do operador \cite{Noberto}.
 
-Atualmente, a programação do robô é feita através de um software
-no qual é possível programar o robô diretamente no
-chão-de-fábrica, "ensinando" ao robô os movimentos que devem ser
-executados, ou através de uma linguagem de programação.
+Atualmente, a programação do robô é feita através de um software no
+qual é possível programar o robô diretamente no chão-de-fábrica,
+"ensinando" ao robô os movimentos que devem ser executados, ou
+através de uma linguagem de programação.
 
 A programação \emph{on-line} de um robô, de um modo geral, pode
 consumir muito tempo, evoluindo de modo desproporcional ao aumento
@@ -119,20 +118,17 @@ programação do robô.
 
 \section{Algoritmo de Afinamento}
 O afinamento é uma operação aplicada a imagens binárias para
-reduzi-las a uma cadeia simples com largura de um pixel,
-preservando a sua conectividade e topologia. O objetivo do
-afinamento é remover pixels redundantes na imagem de forma que
-apenas os pixels essenciais sejam mantidos.
-Para este trabalho, foi utilizado o algoritmo de afinamento de
-Zhang-Suen \cite{Zhang}. O algoritmo de Zhang-Suen é um algoritmo
-de afinamento paralelo. No afinamento paralelo, os pixels são
-examinados para exclusão baseando-se apenas na iteração anterior.
-Desta forma, a imagem pode ser dividida em partes menores e o
-processamento destas partes pode ser feito de forma independente
-(o que acarretaria um ganho de desempenho em um computador com
-mais de um processador).
-
-
+reduzi-las a uma cadeia simples com largura de um pixel, preservando
+a sua conectividade e topologia. O objetivo do afinamento é remover
+pixels redundantes na imagem de forma que apenas os pixels
+essenciais sejam mantidos. Para este trabalho, foi utilizado o
+algoritmo de afinamento de Zhang-Suen \cite{Zhang}. O algoritmo de
+Zhang-Suen é um algoritmo de afinamento paralelo. No afinamento
+paralelo, os pixels são examinados para exclusão baseando-se apenas
+na iteração anterior. Desta forma, a imagem pode ser dividida em
+partes menores e o processamento destas partes pode ser feito de
+forma independente (o que acarretaria um ganho de desempenho em um
+computador com mais de um processador).
 
 O algoritmo de Zhang-Suen avalia cada ponto da imagem e, através
 da análise da sua vizinhança (um quadrado 3x3 em volta do pixel,
@@ -319,45 +315,46 @@ passo para uma trajetória que possui um cruzamento.
     \label{fig:ExOrd}
 \end{figure}
 
-O primeiro passo do algoritmo é definir o ponto inicial. Na Figura
-\ref{fig:ExOrd-a} é mostrado o ponto inicial em verde, aonde a
-primeira iteração é realizada. Neste momento, só há uma direção
-possível para ser seguida, logo, o próximo ponto da trajetória
-deve ser o ponto na direção SE.
+O primeiro passo do algoritmo é definir o ponto inicial da
+trajetória. Na Figura \ref{fig:ExOrd-a} é mostrado o ponto inicial
+em verde, onde a primeira iteração é realizada. Neste momento, só há
+uma direção possível para ser seguida, logo, o próximo ponto da
+trajetória deve ser o ponto na direção SE.
 
 Neste ponto, existem três direções possíveis:  NE, E e SW, como
-mostra a Figura \ref{fig:ExOrd-b}. A direção E será escolhida pois
-é a que causa uma menor variação de direção do robô.
+mostra a Figura \ref{fig:ExOrd-b}. A direção E será escolhida pois é
+a que causa uma menor variação na direção de movimento do robô.
 
-Logo após, o ponto escolhido e verificado. A partir dele, três
+Logo após, o ponto escolhido é verificado. A partir dele, três
 direções possíveis podem ser escolhidas: N, NE e SE. Visto que o
 robô estará se deslocando na direção E (por causa do movimento
 anterior), duas das possibilidades possíveis proporcionam a mesma
-mudança de direção em relação ao movimento anterior: NE e SE.
-Ambas ocasionam uma mudança de direção menor do que se o robô
-fosse para a direção restante (N). Como o critério da direção
-anterior não é suficiente para escolher qual ponto seguir, a
-direção do passo imediatamente anterior a esta será avaliada. Como
-esta direção anterior é  SE (mostrado na Figura \ref{fig:ExOrd-b},
-o caminho a escolhido é seguir a direção SE, como mostrado na
-Figura \ref{fig:ExOrd-c}.
+mudança de direção em relação ao movimento anterior: NE e SE. Ambas
+ocasionam uma mudança de direção menor que se o robô fosse para a
+direção restante (N). Como o critério da direção anterior não é
+suficiente para escolher qual ponto seguir, a direção do passo
+imediatamente anterior a esta será avaliada. Como esta direção
+anterior é  SE (mostrado na Figura \ref{fig:ExOrd-b}, o caminho a
+escolhido é seguir a direção SE, como mostrado na Figura
+\ref{fig:ExOrd-c}.
 
 As próximas escolhas são feitas de forma simples, visto que só
 existe uma direção a ser seguida, como mostrado na Figura
-\ref{fig:ExOrd-d} e Figura \ref{fig:ExOrd-e}. Ao chegar novamente
-no ponto indicado pela Figura \ref{fig:ExOrd-f}, o algoritmo
+\ref{fig:ExOrd-d} e Figura \ref{fig:ExOrd-e}. Ao chegar novamente no
+ponto indicado pela Figura \ref{fig:ExOrd-f}, o algoritmo
 selecionará a direção NE, pois é a única deste ponto que ainda não
 foi visitada.
 
-No próximo passo, mostrado na Figura \ref{fig:ExOrd-g}, existem
-duas possibilidades de direções, S e E, sendo que E leva a uma
-menor variação da direção anterior.
+No próximo passo, mostrado na Figura \ref{fig:ExOrd-g}, existem duas
+possibilidades de direções, S e E, sendo que E leva a uma menor
+variação da direção anterior.
 
 No último passo a direção escolhida é NE como mostrado na
 \ref{fig:ExOrd-h}. O algoritmo continua até encontrar um ponto que
 não possui mais nenhuma direção disponível a ser seguida. A
 trajetória encontrada para esta configuração é exibida na
 \ref{fig:ExOrd-i}.
+
 
 Os pontos escolhidos são armazenados na forma de uma lista
 encadeada. Além das coordenadas [x,y], a cor do ponto também é
