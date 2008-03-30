@@ -39,6 +39,7 @@
 %\usepackage{psfig,epsfig}
 %\usepackage{psfrag}
 %\usepackage{graphics}
+
 \begin{document}
 % CABEÇALHO
 \title{Programação off-line de robôs industriais a partir de imagens bidimensionais}
@@ -55,14 +56,19 @@
 \keywords{Enter Keywords Here.}
 \selectlanguage{brazil}
 \begin{abstract}
-A utilização de manipuladores robóticos na manufatura...
-
-A busca de células de manufaturas flexíveis estimula o
-desenvolvimento de robôs e, por conseqüência, sua forma de
-programação. Neste artigo é apresentada uma metodologia para
-geração de trajetórias para manipuladores robóticos utilizando
-técnicas de visão computacional, simplificando bastante a tarefa
-de programação do robô.
+A utilização de manipuladores robóticos na manufatura vem crescendo
+a cada dia devido à sua alta flexibilidade, produtividade e ao alto
+padrão de qualidade obtido através desta utilização. A busca de
+células de manufaturas flexíveis estimula o desenvolvimento de robôs
+e, por conseqüência, sua forma de programação. O aumento da
+utilização de robôs demanda uma mão de obra qualificada, que seja
+capaz de dominar as tecnologias envolvidas na sua programação. Além
+disso, a busca por células de manufaturas flexíveis estimula o
+desenvolvimento destes manipuladores robóticos e, por conseqüência,
+sua forma de programação. Neste artigo é apresentada uma metodologia
+para geração de trajetórias para manipuladores robóticos utilizando
+técnicas de visão computacional, simplificando bastante para o
+operador a tarefa de programação do robô.
 
 \end{abstract}
 \keywords{????????????????} ]
@@ -91,8 +97,9 @@ homem-máquina eficientes e habilidades do operador \cite{Noberto}.
 
 Atualmente, a programação do robô é feita através de um software no
 qual é possível programar o robô diretamente no chão-de-fábrica,
-"ensinando" ao robô os movimentos que devem ser executados, ou
-através de uma linguagem de programação.
+"ensinando" ao robô os movimentos que devem ser executados
+(programação \emph{on-line}), ou através de uma linguagem de
+programação (programação \emph{off-line}).
 
 A programação \emph{on-line} de um robô, de um modo geral, pode
 consumir muito tempo, evoluindo de modo desproporcional ao aumento
@@ -103,13 +110,17 @@ Nesses casos, métodos de programação \emph{off-line} tornam-se
 atraentes, minimizando o tempo gasto com programação e
 reprogramação.
 
-\citeasnoun{Norberto} mostra uma metodologia para gerar
-trajetórias a partir de um desenho feito utilizando uma caneta
-digital. .......
+\citeasnoun{Norberto} apresenta uma ferramenta de interface e
+programação de plataforma CAD e a utilização de uma caneta digital
+com funcionalidade Anoto para geração de programas para o robô.
+Desta forma o usuário desenha em um papel especial as trajetórias
+que pretende executar no robô utilizando a caneta digital e o código
+do programa é automaticamente gerado.
 
-O presente trabalho apresenta uma abordagem diferente ao problema
-de planejamento de trajetórias. O objetivo é, através de métodos
-de visão computacional, apresentar uma metodologia para
+O presente trabalho apresenta uma abordagem um pouco diferente ao
+problema de planejamento de trajetórias. O objetivo é, através de
+métodos de visão computacional, apresentar uma metodologia para
+programação \emph{off-line} de manipuladores robóticos através da
 identificação de trajetórias em imagens bidimensionais geradas por
 computador. Desta forma o operador poderia, através de um programa
 simples de edição de imagens, definir a trajetória do robô para
@@ -410,6 +421,10 @@ Figura \ref{fig:TemplateModProg}.
     \caption{Modelo de programa para KRC-2.}
     \label{fig:ModProg}
 \end{figure}
+
+Além das coordenadas dos pontos, outras informações podem ser
+dinamicamente adicionadas neste arquivo de acordo com a cor de cada
+trajetória.
 
 \section{Aplicação da metodologia}
 A metodologia apresentada foi aplicada na geração de um programa
