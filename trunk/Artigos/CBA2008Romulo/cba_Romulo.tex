@@ -8,7 +8,7 @@
 \renewcommand{\topfraction}{0.85}
 \renewcommand{\textfraction}{0.1}
 \renewcommand{\floatpagefraction}{0.75}
-\clubpenalty=9999 \widowpenalty=9999 \hyphenpenalty=9999
+\clubpenalty=9999 \widowpenalty=9999 \hyphenpenalty=10000
 %
 % LaTeX2e class SBATeX
 %
@@ -51,27 +51,41 @@
 \maketitle
 \selectlanguage{english}
 \begin{abstract}
-    Abstract
+The use of robotic manipulators in manufacturing systems is in
+constant grown due to its high flexibility, productivity and the
+high quality achieved through its use. The search for flexible
+manufacturing cells stimulates the development of robots and,
+consequently, their programming methods. Increased use of robots
+demand high qualified workers, able to master the technology
+involved in their programming. Also, at each new task, the time
+spent with the programming may slow down the production process.
+In this article it is presented a methodology for trajectories
+generation for robotic manipulators using computer vision
+techniques, simplifying for the operator the task of programming
+the robot. The task is drawn into an image file, representing the
+trajectory to be done by the robot end-effector.
 \end{abstract}
-\keywords{Enter Keywords Here.}
-\selectlanguage{brazil}
+\keywords{Robotic manipulators, off-line programming, computer
+vision.} \selectlanguage{brazil}
 \begin{abstract}
-A utilização de manipuladores robóticos na manufatura vem crescendo
-a cada dia devido à sua alta flexibilidade, produtividade e ao alto
-padrão de qualidade obtido através desta utilização. A busca de
-células de manufaturas flexíveis estimula o desenvolvimento de robôs
-e, por conseqüência, sua forma de programação. O aumento da
-utilização de robôs demanda uma mão de obra qualificada, que seja
-capaz de dominar as tecnologias envolvidas na sua programação. Além
-disso, a busca por células de manufaturas flexíveis estimula o
-desenvolvimento destes manipuladores robóticos e, por conseqüência,
-sua forma de programação. Neste artigo é apresentada uma metodologia
-para geração de trajetórias para manipuladores robóticos utilizando
-técnicas de visão computacional, simplificando bastante para o
-operador a tarefa de programação do robô.
-
+A utilização de manipuladores robóticos em sistemas de manufatura
+vem crescendo a cada dia devido à sua alta flexibilidade,
+produtividade e ao alto padrão de qualidade obtido através desta
+utilização. A busca de células de manufaturas flexíveis estimula o
+desenvolvimento de robôs e, por conseqüência, sua forma de
+programação. O aumento da utilização de robôs demanda uma mão de
+obra qualificada, que seja capaz de dominar as tecnologias
+envolvidas na sua programação, além do fato de que a cada nova
+tarefa, o tempo gasto com a programação pode onerar o processo
+produtivo. Neste artigo é apresentada uma metodologia para geração
+de trajetórias para manipuladores robóticos utilizando técnicas de
+visão computacional, simplificando bastante para o operador a
+tarefa de programação do robô. A tarefa é desenhada em um arquivo
+de imagem, representando a trajetória a ser realizada pelo
+efetuador do robô.
 \end{abstract}
-\keywords{????????????????} ]
+\keywords{Manipuladores robóticos, programação \emph{off-line},
+visão computacional} ]
 
 \selectlanguage{brazil}
 
@@ -81,9 +95,9 @@ Os primeiros robôs industriais começaram a ser fabricados e
 utilizados com o intuito de se substituir o ser humano em tarefas
 que ele não poderia realizar, seja por causa de suas próprias
 limitações físicas, ou por envolverem condições desagradáveis ou
-extremas. Além disto, a utilização de robôs industriais possibilita
-uma melhora na qualidade do produto, uniformizando a produção,
-eliminando perdas e refugos.
+extremas. Além disso, a utilização de robôs industriais
+possibilita uma melhora na qualidade do produto, uniformizando a
+produção, eliminando perdas e refugos.
 
 Com os avanços tecnológicos, a utilização de manipuladores robóticos
 tem estado cada vez mais presente em todo o mundo. Isso se deve à
@@ -93,13 +107,15 @@ manufatura.
 
 O sucesso e eficiência na utilização de robôs em sistemas de
 manufatura flexíveis desenvolvidos depende de interfaces
-homem-máquina eficientes e habilidades do operador \cite{Noberto}.
+homem-máquina eficientes e habilidades do operador
+\cite{Norberto}.
 
-Atualmente, a programação do robô é feita através de um software no
-qual é possível programar o robô diretamente no chão-de-fábrica,
-"ensinando" ao robô os movimentos que devem ser executados
-(programação \emph{on-line}), ou através de uma linguagem de
-programação (programação \emph{off-line}).
+Atualmente, a programação do robô é feita através de um software
+no qual é possível programar o robô diretamente no
+chão-de-fábrica, ``ensinando'' ao robô os movimentos que devem ser
+executados (programação \emph{on-line}), ou através de um
+\emph{software} específico para a programação (programação
+\emph{off-line}).
 
 A programação \emph{on-line} de um robô, de um modo geral, pode
 consumir muito tempo, evoluindo de modo desproporcional ao aumento
@@ -111,35 +127,55 @@ atraentes, minimizando o tempo gasto com programação e
 reprogramação.
 
 \citeasnoun{Norberto} apresenta uma ferramenta de interface e
-programação de plataforma CAD e a utilização de uma caneta digital
-com funcionalidade Anoto para geração de programas para o robô.
-Desta forma o usuário desenha em um papel especial as trajetórias
-que pretende executar no robô utilizando a caneta digital e o código
-do programa é automaticamente gerado.
+programação baseada em plataforma CAD e na utilização de uma
+caneta digital para geração de programas para o robô. Dessa forma
+o usuário desenha em um papel especial as trajetórias que pretende
+executar no robô utilizando a caneta digital e o código do
+programa é automaticamente gerado a partir dos pontos gerados
+diretamente pela caneta.
 
-O presente trabalho apresenta uma abordagem um pouco diferente ao
-problema de planejamento de trajetórias. O objetivo é, através de
-métodos de visão computacional, apresentar uma metodologia para
-programação \emph{off-line} de manipuladores robóticos através da
-identificação de trajetórias em imagens bidimensionais geradas por
-computador. Desta forma o operador poderia, através de um programa
-simples de edição de imagens, definir a trajetória do robô para
-determinada operação sem a necessidade de conhecer a linguagem de
-programação do robô.
+No presente trabalho, a trajetória do manipulador é gerada a
+partir de uma imagem bidimensional da tarefa, sem a necessidade da
+caneta digital. Um algoritmo obtém os pontos de interesse na
+imagem e gera as coordenadas para o programa na linguagem de
+programação do robô previamente configurada.
+%Através de métodos de visão computacional, apresentar uma
+%metodologia para programação \emph{off-line} de manipuladores
+%robóticos através da identificação de trajetórias em imagens
+%bidimensionais geradas por computador.
+Dessa forma o operador poderia, através de um programa simples de
+edição de imagens, definir a trajetória do robô para determinada
+operação sem a necessidade de conhecer a linguagem de programação
+do robô. O programa é, então, gerado de forma \emph{off-line} e
+posteriormente carregado no controlador do robô.
+
+A seção \ref{sec:afin} apresenta uma revisão bibliográfica do
+algoritmo de afinamento de imagens utilizado para extrair uma
+figura com um pixel de largura a partir da imagem original. A
+seção \ref{sec:deftraj} mostra o algoritmo desenvolvido para a
+definição da trajetória pela ordenação dos pontos da imagem, e na
+seção \ref{sec:progrb} é mostrada a geração do programa na
+linguagem específica do controlador. Na seção \ref{sec:aplic} é
+mostrado um exemplo de aplicação da metodologia apresentada e na
+seção \ref{sec:concl} são apresentadas as conclusões e
+perspectivas de trabalhos futuros e em andamento.
 
 \section{Algoritmo de Afinamento}
+\label{sec:afin}
+
 O afinamento é uma operação aplicada a imagens binárias para
-reduzi-las a uma cadeia simples com largura de um pixel, preservando
-a sua conectividade e topologia. O objetivo do afinamento é remover
-pixels redundantes na imagem de forma que apenas os pixels
-essenciais sejam mantidos. Para este trabalho, foi utilizado o
-algoritmo de afinamento de Zhang-Suen \cite{Zhang}. O algoritmo de
-Zhang-Suen é um algoritmo de afinamento paralelo. No afinamento
-paralelo, os pixels são examinados para exclusão baseando-se apenas
-na iteração anterior. Desta forma, a imagem pode ser dividida em
-partes menores e o processamento destas partes pode ser feito de
-forma independente (o que acarretaria um ganho de desempenho em um
-computador com mais de um processador).
+reduzi-las a uma cadeia simples com largura de um pixel,
+preservando a sua conectividade e topologia. O objetivo do
+afinamento é remover pixels redundantes na imagem de forma que
+apenas os pixels essenciais sejam mantidos. Para este trabalho,
+foi utilizado o algoritmo de afinamento de Zhang-Suen
+\cite{Zhang}. O algoritmo de Zhang-Suen é um algoritmo de
+afinamento paralelo. No afinamento paralelo, os pixels são
+examinados para exclusão baseando-se apenas na iteração anterior.
+Dessa forma, a imagem pode ser dividida em partes menores e o
+processamento destas partes pode ser feito de forma independente
+(o que acarretaria um ganho de desempenho em um computador com
+mais de um processador).
 
 O algoritmo de Zhang-Suen avalia cada ponto da imagem e, através
 da análise da sua vizinhança (um quadrado 3x3 em volta do pixel,
@@ -162,22 +198,20 @@ conectividade.
     \label{fig:EsquemaZhang}
 \end{figure}
 
-Este algoritmo é composto por duas subiterações. Na primeira, o
+Esse algoritmo é composto por duas subiterações. Na primeira, o
 ponto P é excluído se satisfaz as seguintes condições:
-
 \begin{description}
     \item [(a)] $ 2 <= NN(P) <= 6 $,
     \item [(b)] $ CRN(P) = 2 $,
     \item [(c)] $ P2 * P4 * P6 = 0 $,
     \item [(d)] $ P4 * P6 * P8 = 0 $,
 \end{description}
-onde NN(P) é o número de pixels vizinhos de P na cor preta e
-CRN(P) é o número de transições de branco para preto dos pixels
-vizinhos ao longo de uma rotação em torno de P. P2 a P9 assumem
-valor 1 quando o pixel é preto e 0 quando é branco. Na segunda
-iteração, as duas últimas condições são substituídas por suas
-rotações de 180º.
-
+onde $NN(P)$ é o número de pixels vizinhos de $P$ na cor preta e
+$CRN(P)$ é o número de transições de branco para preto dos pixels
+vizinhos ao longo de uma rotação em torno de $P$. $P2$ a $P9$
+assumem valor 1 quando o pixel é preto e 0 quando é branco. Na
+segunda iteração, as duas últimas condições são substituídas por
+suas rotações de 180º:
 \begin{description}
     \item [(c')] $ P2 * P6 * P8 = 0 $
     \item [(d')] $ P2 * P4 * P8 = 0 $
@@ -193,9 +227,12 @@ escada explora a seguinte propriedade: metade dos pixels que
 apresentam uma forma semelhante a uma escada pode ser removida sem
 afetar o formato ou a conectividade do objeto. O algoritmo se
 baseia em varrer toda a imagem e remover pixels da posição central
-que se encaixem em uma das máscaras:
+que se encaixem em uma das máscaras mostradas na Figura
+\ref{fig:mascaras}, em que $x$ pode assumir qualquer valor, 0 ou
+1.
 
-\begin{center}
+\begin{figure}[htb]
+    \begin{center}
     \begin{tabular}{|c|c|c|}
         \hline
         0 & 1 & $x$ \\
@@ -236,12 +273,16 @@ que se encaixem em uma das máscaras:
         \hline
     \end{tabular}
 \end{center}
-em que $x$ pode assumir qualquer valor, 0 ou 1.
+    \caption{Máscaras utilizadas para remoção de pixels pela fórmula de Holt.}
+    \label{fig:mascaras}
+\end{figure}
 
 \section{Definição da Trajetória}
+\label{sec:deftraj}
+
 Uma vez que a linha de trajetória passou pelo algoritmo de
-afinação, é necessário ordenar os pontos e gerar a trajetória para
-o robô. O primeiro passo é definir qual será o ponto inicial.
+afinamento, é necessário ordenar os pontos e gerar a trajetória
+para o robô. O primeiro passo é definir qual será o ponto inicial.
 
 O ponto inicial será o ponto que possuir número de vizinhos igual
 a 1 e possuir a cor verde (escolhida arbitrariamente). A cor
@@ -328,8 +369,8 @@ passo para uma trajetória que possui um cruzamento.
 
 O primeiro passo do algoritmo é definir o ponto inicial da
 trajetória. Na Figura \ref{fig:ExOrd-a} é mostrado o ponto inicial
-em verde, onde a primeira iteração é realizada. Neste momento, só há
-uma direção possível para ser seguida, logo, o próximo ponto da
+em verde, onde a primeira iteração é realizada. Nesse momento, só
+há uma direção possível para ser seguida, logo, o próximo ponto da
 trajetória deve ser o ponto na direção SE.
 
 Neste ponto, existem três direções possíveis:  NE, E e SW, como
@@ -340,13 +381,13 @@ Logo após, o ponto escolhido é verificado. A partir dele, três
 direções possíveis podem ser escolhidas: N, NE e SE. Visto que o
 robô estará se deslocando na direção E (por causa do movimento
 anterior), duas das possibilidades possíveis proporcionam a mesma
-mudança de direção em relação ao movimento anterior: NE e SE. Ambas
-ocasionam uma mudança de direção menor que se o robô fosse para a
-direção restante (N). Como o critério da direção anterior não é
-suficiente para escolher qual ponto seguir, a direção do passo
-imediatamente anterior a esta será avaliada. Como esta direção
-anterior é  SE (mostrado na Figura \ref{fig:ExOrd-b}, o caminho a
-escolhido é seguir a direção SE, como mostrado na Figura
+mudança de direção em relação ao movimento anterior: NE e SE.
+Ambas ocasionam uma mudança de direção menor que se o robô fosse
+para a direção restante (N). Como o critério da direção anterior
+não é suficiente para escolher qual ponto seguir, a direção do
+passo imediatamente anterior a esta será avaliada. Como esta
+direção anterior é  SE (mostrado na Figura \ref{fig:ExOrd-b}), o
+caminho a escolhido é seguir a direção SE, como mostrado na Figura
 \ref{fig:ExOrd-c}.
 
 As próximas escolhas são feitas de forma simples, visto que só
@@ -356,9 +397,9 @@ ponto indicado pela Figura \ref{fig:ExOrd-f}, o algoritmo
 selecionará a direção NE, pois é a única deste ponto que ainda não
 foi visitada.
 
-No próximo passo, mostrado na Figura \ref{fig:ExOrd-g}, existem duas
-possibilidades de direções, S e E, sendo que E leva a uma menor
-variação da direção anterior.
+No próximo passo, mostrado na Figura \ref{fig:ExOrd-g}, existem
+duas possibilidades de direções, S e E, sendo que a direção E leva
+a uma menor variação da direção anterior.
 
 No último passo a direção escolhida é NE como mostrado na
 \ref{fig:ExOrd-h}. O algoritmo continua até encontrar um ponto que
@@ -374,17 +415,20 @@ armazenada para futuramente definir os parâmetros da trajetória
 etc.).
 
 \section{Geração do programa para o robô}
+\label{sec:progrb}
+
 Depois de montada a lista com informações da trajetória e de
 parâmetros de utilização, é necessário gerar o programa na
-linguagem do robô para executar estas tarefas. O arquivo é gerado
+linguagem do robô para executar essas tarefas. O arquivo é gerado
 baseando-se em um modelo de acordo com a linguagem do robô. A
 utilização do modelo permite que o usuário possa inserir
 informações específicas ou programar alguma tarefa antes da
 execução da trajetória. A programação da trajetória é inserida no
 código em uma posição definida no modelo entre as marcações
-\begin{ttfamily}; \#MainSection\#Begin\#\end{ttfamily} e
-\begin{ttfamily}; \#MainSection\#End\#\end{ttfamily}, como mostrado na
-Figura \ref{fig:TemplateModProg}.
+\begin{ttfamily};\#MainSection\#Begin\#\end{ttfamily} e
+\begin{ttfamily};\#MainSection\#End\#\end{ttfamily}. A
+Figura \ref{fig:TemplateModProg} mostra um exemplo de programa
+gerado na linguagem KRL para o controlador KRC-2, da KUKA Roboter.
 
 \begin{figure}[htb]
 
@@ -400,7 +444,7 @@ Figura \ref{fig:TemplateModProg}.
     BAS(\#VEL\_PTP,20) \\
     PTP XHOME \\
     \\
-    ; \#MainSection\#Begin\# \\
+    ;\#MainSection\#Begin\# \\
     LIN \{x 1, y 1,z 0,a 0,b 0,c 0\} C\_VEL \\
     LIN \{x 2, y 2,z 0,a 0,b 0,c 0\} C\_VEL \\
     LIN \{x 3, y 2,z 0,a 0,b 0,c 0\} C\_VEL \\
@@ -412,21 +456,23 @@ Figura \ref{fig:TemplateModProg}.
     LIN \{x 3, y 1,z 0,a 0,b 0,c 0\} C\_VEL \\
     LIN \{x 4, y 1,z 0,a 0,b 0,c 0\} C\_VEL \\
     LIN \{x 5, y 0,z 0,a 0,b 0,c 0\} C\_VEL \\
-    ; \#MainSection\#End\# \\
+    ;\#MainSection\#End\# \\
     \\
     PTP XHOME \\
     END
     \end{minipage}
     }
     \caption{Modelo de programa para KRC-2.}
-    \label{fig:ModProg}
+    \label{fig:TemplateModProg}
 \end{figure}
 
 Além das coordenadas dos pontos, outras informações podem ser
-dinamicamente adicionadas neste arquivo de acordo com a cor de cada
-trajetória.
+dinamicamente adicionadas neste arquivo de acordo com a cor dos
+pixels definidos em cada parte da trajetória.
 
 \section{Aplicação da metodologia}
+\label{sec:aplic}
+
 A metodologia apresentada foi aplicada na geração de um programa
 para o manipulador robótico KUKA modelo KR-6 com controlador
 KRC-2.
@@ -490,6 +536,8 @@ do modelo de robô escolhido, com poucas alterações pode ser
 adaptado para qualquer outro modelo ou fabricante.
 
 \section{Conclusões}
+\label{sec:concl}
+
 Foi apresentada uma metodologia para geração de trajetórias para
 robôs industriais a partir de imagens bidimensionais geradas
 artificialmente. O programa se mostrou eficiente, sendo capaz de
@@ -499,9 +547,9 @@ direção e sentido de movimento mais apropriados.
 Atualmente, encontra-se em desenvolvimento uma metodologia para
 definição automática do sistema de coordenadas e escala do desenho
 a partir de eixos representados na própria imagem. Além disso,
-técnicas de tratamento de imagens estão sendo estudadas para ser
-possível a utilização de fotografias no próprio espaço de trabalho
-do robô.
+técnicas de tratamento de imagens estão sendo aplicadas para
+possibilitar a utilização de fotografias no próprio espaço de
+trabalho do robô.
 
 \section*{Agradecimentos}
 Os autores agradecem ao PIBIC/CNPq pelo apoio financeiro e à KUKA
