@@ -1,0 +1,1 @@
+A project to generate robots paths by a two dimensional binary image
